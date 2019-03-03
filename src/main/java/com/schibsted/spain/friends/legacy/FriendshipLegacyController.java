@@ -1,48 +1,44 @@
 package com.schibsted.spain.friends.legacy;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import com.schibsted.spain.friends.service.FriendshipService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/friendship")
+@Api(value = "Friendship", tags = {"Friendship controller"})
 public class FriendshipLegacyController {
 
-  @PostMapping("/request")
-  void requestFriendship(
-      @RequestParam("usernameFrom") String usernameFrom,
-      @RequestParam("usernameTo") String usernameTo,
-      @RequestHeader("X-Password") String password
-  ) {
-    throw new RuntimeException("not implemented yet!");
-  }
+    private final FriendshipService friendshipService;
 
-  @PostMapping("/accept")
-  void acceptFriendship(
-      @RequestParam("usernameFrom") String usernameFrom,
-      @RequestParam("usernameTo") String usernameTo,
-      @RequestHeader("X-Password") String password
-  ) {
-    throw new RuntimeException("not implemented yet!");
-  }
+    public FriendshipLegacyController(@Autowired FriendshipService friendshipService) {
+        this.friendshipService = friendshipService;
+    }
 
-  @PostMapping("/decline")
-  void declineFriendship(
-      @RequestParam("usernameFrom") String usernameFrom,
-      @RequestParam("usernameTo") String usernameTo,
-      @RequestHeader("X-Password") String password
-  ) {
-    throw new RuntimeException("not implemented yet!");
-  }
+    @PostMapping("/request")
+    @ApiOperation(nickname = "request friendship", value = "Request friendship")
+    Boolean requestFriendship(@RequestParam("usernameFrom") String usernameFrom, @RequestParam("usernameTo") String usernameTo, @RequestHeader("X-Password") String password) {
+        return friendshipService.requestFriendShip(usernameFrom, usernameTo);
+    }
 
-  @GetMapping("/list")
-  Object listFriends(
-      @RequestParam("username") String username,
-      @RequestHeader("X-Password") String password
-  ) {
-    throw new RuntimeException("not implemented yet!");
-  }
+    @PostMapping("/accept")
+    @ApiOperation(value = "Accept friendship")
+    Boolean acceptFriendship(@RequestParam("usernameFrom") String usernameFrom, @RequestParam("usernameTo") String usernameTo, @RequestHeader("X-Password") String password) {
+        return friendshipService.acceptFriendShip(usernameFrom, usernameTo);
+    }
+
+    @PostMapping("/decline")
+    @ApiOperation(value = "Decline friendship")
+    Boolean declineFriendship(@RequestParam("usernameFrom") String usernameFrom, @RequestParam("usernameTo") String usernameTo, @RequestHeader("X-Password") String password
+    ) {
+        return friendshipService.declineFriendShip(usernameFrom, usernameTo);
+    }
+
+    @GetMapping("/list")
+    @ApiOperation(value = "List user's friends")
+    Object listFriends(@RequestParam("username") String username, @RequestHeader("X-Password") String password) {
+        return friendshipService.listFriends(username);
+    }
 }

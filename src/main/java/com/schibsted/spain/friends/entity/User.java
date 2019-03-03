@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Builder
 @Getter
@@ -12,6 +13,7 @@ import java.util.Objects;
 public class User {
     private String username;
     private String password;
+    private Set<User> friends;
 
     @Override
     public boolean equals(final Object obj) {
