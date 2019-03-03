@@ -2,7 +2,6 @@ package com.schibsted.spain.friends.repository;
 
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
-import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +29,7 @@ class FriendshipRepositoryImplTest {
         friendshipRepository.requestFriendship(user1, user2);
         friendshipRepository.requestFriendship(user1, user3);
         assertThat(friendshipRepository.acceptFriendship(user1, user2)).isTrue();
-        assertThatExceptionOfType(NotFoundException.class).isThrownBy(() -> friendshipRepository.acceptFriendship(user1, user2));
+        assertThatExceptionOfType(AlreadyExistsException.class).isThrownBy(() -> friendshipRepository.acceptFriendship(user1, user2));
     }
 
 }

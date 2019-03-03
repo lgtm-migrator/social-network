@@ -3,9 +3,9 @@ package com.schibsted.spain.friends.legacy;
 import com.schibsted.spain.friends.service.FriendshipService;
 import com.schibsted.spain.friends.service.UserService;
 import com.schibsted.spain.friends.utils.Utils;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FriendshipLegacyControllerTest {
 
     @Autowired
@@ -32,13 +33,6 @@ class FriendshipLegacyControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeAll
-    void setupUsers() {
-        userService.signup("johndoe", "12345678");
-        userService.signup("roseanne", "12345678");
-        userService.signup("peter", "12345678");
-    }
 
     @Test
     @DisplayName("Friendship request test cases")
@@ -137,7 +131,6 @@ class FriendshipLegacyControllerTest {
                 .header("X-Password", "r3456789"))
                 .andExpect(status().isBadRequest());
     }
-
 
     @Test
     @DisplayName("Decline friendship request")

@@ -44,15 +44,17 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     }
 
     private boolean isRequest(FriendshipRequest request, User userFrom, User userTo, FriendRequestStatus status) {
-        return request.getRequestedUser().equals(userFrom) &&
-                request.getRequesterUser().equals(userTo) &&
+        return request.getRequestedUser().getUsername().equalsIgnoreCase(userFrom.getUsername()) &&
+                request.getRequesterUser().getUsername().equalsIgnoreCase(userTo.getUsername()) &&
                 request.getStatus().equals(status);
     }
 
     @Override
     public Boolean acceptFriendship(User requester, User requested) {
-        final boolean hasAcceptedRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, ACCEPTED));
-        final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING));
+        final boolean hasAcceptedRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, ACCEPTED) ||
+                isRequest(request, requested, requester, ACCEPTED));
+        final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING) ||
+                isRequest(request, requested, requester, PENDING));
 
         if (hasAcceptedRequests) {
             throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester, requester));
