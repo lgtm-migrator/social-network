@@ -24,4 +24,7 @@ public class NotFoundException extends BaseException {
         super(message, code);
     }
 
+    public NotFoundException() {
+        super("entity not found");
+    }
 }
