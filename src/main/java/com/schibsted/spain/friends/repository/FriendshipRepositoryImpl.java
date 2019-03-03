@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.schibsted.spain.friends.entity.FriendRequestStatus.ACCEPTED;
-import static com.schibsted.spain.friends.entity.FriendRequestStatus.PENDING;
+import static com.schibsted.spain.friends.entity.FriendRequestStatus.*;
 
 @Repository
 public class FriendshipRepositoryImpl implements FriendshipRepository {
@@ -72,7 +71,17 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     }
 
     @Override
-    public Boolean declineFriendship(String requester, String requested) {
+    public Boolean declineFriendship(User requester, User requested) {
+        final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING));
+
+        if (hasPendingRequests) {
+            friendshipRequests.stream()
+                    .filter(request -> isRequest(request, requested, requested, PENDING))
+                    .forEach(request -> request.setStatus(DECLINED));
+        } else {
+            throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
+        }
+
         return false;
     }
 }

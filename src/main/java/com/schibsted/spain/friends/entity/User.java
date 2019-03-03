@@ -3,6 +3,7 @@ package com.schibsted.spain.friends.entity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Singular;
 
 import java.util.Objects;
 import java.util.Set;
@@ -13,6 +14,8 @@ import java.util.Set;
 public class User {
     private String username;
     private String password;
+
+    @Singular
     private Set<User> friends;
 
     @Override

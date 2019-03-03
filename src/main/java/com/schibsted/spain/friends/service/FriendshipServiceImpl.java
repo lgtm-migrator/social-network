@@ -50,7 +50,10 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public Boolean declineFriendShip(String requester, String requested) {
-        return friendshipRepository.declineFriendship(requester, requested);
+        Tuple2 users = getUsers(requester, requested);
+        User requesterUser = (User) users._1;
+        User requestedUser = (User) users._2;
+        return friendshipRepository.declineFriendship(requesterUser, requestedUser);
     }
 
     @Override

@@ -23,4 +23,17 @@ public class UserRepositoryImpl implements UserRepository {
                 .findFirst()
                 .orElseThrow(NotFoundException::new);
     }
+
+    @Override
+    public User findUser(String username, String password) {
+        return users.stream()
+                .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
+                .findFirst()
+                .orElseThrow(NotFoundException::new);
+    }
+
+    @Override
+    public Boolean updateUser(User user) {
+        return users.remove(user) && users.add(user);
+    }
 }

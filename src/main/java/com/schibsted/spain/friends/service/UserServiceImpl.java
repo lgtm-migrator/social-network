@@ -1,10 +1,9 @@
 package com.schibsted.spain.friends.service;
 
 import com.google.common.base.Preconditions;
+import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.UserRepository;
-import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
-import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
-import com.schibsted.spain.friends.utils.exceptions.ValidationException;
+import com.schibsted.spain.friends.utils.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,11 +11,11 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class SignupServiceImpl implements SignupService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
-    public SignupServiceImpl(@Autowired UserRepository userRepository) {
+    public UserServiceImpl(@Autowired UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -52,5 +51,29 @@ public class SignupServiceImpl implements SignupService {
                     .exceptionClass(this.getClass().getSimpleName())
                     .build());
         }
+    }
+
+    @Override
+    public Boolean addFriend(String username, String username2) {
+        User userFriend = userRepository.getUser(username);
+        User userFriend2 = userRepository.getUser(username2);
+
+        userFriend.getFriends().add(userFriend2);
+        userFriend2.getFriends().add(userFriend);
+        return userRepository.updateUser(userFriend) && userRepository.updateUser(userFriend2);
+    }
+
+    @Override
+    public Boolean authenticate(String username, String password) {
+        User user;
+        try {
+            user = userRepository.findUser(username, password);
+        } catch (NotFoundException e) {
+            log.error("user {} not found", username);
+            throw new UnauthorizedException(ErrorDto.builder()
+                    .msg(e.getMessage())
+                    .exceptionClass(this.getClass().getSimpleName()).build());
+        }
+        return user != null;
     }
 }
