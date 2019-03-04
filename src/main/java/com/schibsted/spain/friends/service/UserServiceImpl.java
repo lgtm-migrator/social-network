@@ -53,6 +53,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * Add Users as friends to each other
+     *
+     * @param username  - user
+     * @param username2 - useer
+     * @return true if Successful operation
+     */
     @Override
     public Boolean addFriend(String username, String username2) {
         User userFriend = userRepository.getUser(username);
@@ -63,6 +70,12 @@ public class UserServiceImpl implements UserService {
         return userRepository.updateUser(userFriend) && userRepository.updateUser(userFriend2);
     }
 
+    /**
+     * Looks for a user by its username an password
+     * @param username username
+     * @param password password
+     * @return true if the user is found, an {@link UnauthorizedException} otherwise
+     */
     @Override
     public Boolean authenticate(String username, String password) {
         User user;

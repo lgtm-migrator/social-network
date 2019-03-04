@@ -19,10 +19,12 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
 
-    public FriendshipServiceImpl(@Autowired UserRepository userRepository,
-                                 @Autowired FriendshipRepository friendshipRepository) {
+    private final UserService userService;
+
+    public FriendshipServiceImpl(@Autowired UserRepository userRepository, @Autowired FriendshipRepository friendshipRepository, @Autowired UserService userService) {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
+        this.userService = userService;
     }
 
     @Override
@@ -47,7 +49,10 @@ public class FriendshipServiceImpl implements FriendshipService {
         Tuple2<User, User> users = getUsers(requester, requested);
         User requesterUser = users._1;
         User requestedUser = users._2;
-        return friendshipRepository.acceptFriendship(requesterUser, requestedUser);
+        if (friendshipRepository.acceptFriendship(requesterUser, requestedUser)) {
+            userService.addFriend(requester, requested);
+        }
+        return true;
     }
 
     @Override
