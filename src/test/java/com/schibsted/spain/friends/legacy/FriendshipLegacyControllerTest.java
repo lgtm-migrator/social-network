@@ -5,7 +5,6 @@ import com.schibsted.spain.friends.service.UserService;
 import com.schibsted.spain.friends.utils.Utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -15,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FriendshipLegacyControllerTest {
 
     @Autowired
@@ -197,12 +196,12 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("list friends test cases")
     void listFriends() throws Exception {
-        mockMvc.perform(post(Utils.FRIENDSHIP_LIST_URL)
+        mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
                 .param("username", "johndoe")
                 .header("X-Password", "j12345679"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_LIST_URL)
+        mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
                 .param("username", "samantha")
                 .header("X-Password", "x12345678"))
                 .andExpect(status().isBadRequest());
@@ -217,7 +216,7 @@ class FriendshipLegacyControllerTest {
     }
 
     private void testFindFriends(String user, String password, String result) throws Exception {
-        final String response4 = mockMvc.perform(post(Utils.FRIENDSHIP_LIST_URL)
+        final String response4 = mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
                 .param("username", user)
                 .header("X-Password", password))
                 .andExpect(status().is2xxSuccessful())

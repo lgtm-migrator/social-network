@@ -19,7 +19,8 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
 
-    public FriendshipServiceImpl(@Autowired UserRepository userRepository, @Autowired FriendshipRepository friendshipRepository) {
+    public FriendshipServiceImpl(@Autowired UserRepository userRepository,
+                                 @Autowired FriendshipRepository friendshipRepository) {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
     }
@@ -27,12 +28,13 @@ public class FriendshipServiceImpl implements FriendshipService {
     @Override
     public Boolean requestFriendShip(String requester, String requested) {
         if (requester.equals(requested)) {
-            throw new BusinessException(String.format("The user %s cannot make a friend request to himself", requester));
+            throw new BusinessException(
+                    String.format("The user %s cannot make a friend request to himself", requester));
         } else {
             try {
-                Tuple2 users = getUsers(requester, requested);
-                User requesterUser = (User) users._1;
-                User requestedUser = (User) users._2;
+                Tuple2<User, User> users = getUsers(requester, requested);
+                User requesterUser = users._1;
+                User requestedUser = users._2;
                 return friendshipRepository.requestFriendship(requesterUser, requestedUser);
             } catch (Exception e) {
                 throw new NotFoundException("user not found", e);
@@ -42,17 +44,17 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     @Override
     public Boolean acceptFriendShip(String requester, String requested) {
-        Tuple2 users = getUsers(requester, requested);
-        User requesterUser = (User) users._1;
-        User requestedUser = (User) users._2;
+        Tuple2<User, User> users = getUsers(requester, requested);
+        User requesterUser = users._1;
+        User requestedUser = users._2;
         return friendshipRepository.acceptFriendship(requesterUser, requestedUser);
     }
 
     @Override
     public Boolean declineFriendShip(String requester, String requested) {
-        Tuple2 users = getUsers(requester, requested);
-        User requesterUser = (User) users._1;
-        User requestedUser = (User) users._2;
+        Tuple2<User, User> users = getUsers(requester, requested);
+        User requesterUser = users._1;
+        User requestedUser = users._2;
         return friendshipRepository.declineFriendship(requesterUser, requestedUser);
     }
 
