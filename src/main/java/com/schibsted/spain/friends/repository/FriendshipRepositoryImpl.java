@@ -37,7 +37,7 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
         } else {
             throw new AlreadyExistsException(ErrorDto.builder()
-                    .msg(String.format("There is a pending request between %s and %s", requesterUser.getUsername(), requestedUser.getUsername()))
+                    .message(String.format("There is a pending request between %s and %s", requesterUser.getUsername(), requestedUser.getUsername()))
                     .exceptionClass(this.getClass().getSimpleName())
                     .build());
         }

@@ -4,6 +4,7 @@ import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.FriendshipRepository;
 import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.utils.exceptions.BusinessException;
+import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -39,7 +40,10 @@ public class FriendshipServiceImpl implements FriendshipService {
                 User requestedUser = users._2;
                 return friendshipRepository.requestFriendship(requesterUser, requestedUser);
             } catch (Exception e) {
-                throw new NotFoundException("user not found", e);
+                throw new NotFoundException(ErrorDto.builder()
+                        .message("User not found")
+                        .exceptionClass(this.getClass().getSimpleName())
+                        .build());
             }
         }
     }
@@ -69,7 +73,10 @@ public class FriendshipServiceImpl implements FriendshipService {
             User result = userRepository.getUser(user);
             return result.getFriends();
         } catch (Exception e) {
-            throw new NotFoundException(String.format("user %s not found", user), e);
+            throw new NotFoundException(ErrorDto.builder()
+                    .message(String.format("user %s not found, cause: %s", user, e.getMessage()))
+                    .exceptionClass(this.getClass().getSimpleName())
+                    .build());
         }
     }
 

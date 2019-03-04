@@ -52,7 +52,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorDto> buildResponse(long code, Exception ex, HttpStatus status) {
         ErrorDto errorDto = ErrorDto.builder()
                 .code(code)
-                .msg(ex.getMessage())
+                .message(ex.getMessage())
                 .exceptionClass(ex.getClass().getSimpleName())
                 .build();
         return new ResponseEntity<>(errorDto, status);

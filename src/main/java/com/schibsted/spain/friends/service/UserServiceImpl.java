@@ -39,7 +39,7 @@ public class UserServiceImpl implements UserService {
             Boolean result = userRepository.addUser(username, password);
             if (!result) {
                 throw new AlreadyExistsException(ErrorDto.builder()
-                        .msg(String.format("User %s already exists", username))
+                        .message(String.format("User %s already exists", username))
                         .exceptionClass(this.getClass().getSimpleName())
                         .build());
             }
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
         } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Signup error: {}", e.getMessage());
             throw new ValidationException(ErrorDto.builder()
-                    .msg(e.getMessage())
+                    .message(e.getMessage())
                     .exceptionClass(this.getClass().getSimpleName())
                     .build());
         }
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         } catch (NotFoundException e) {
             log.error("user {} not found", username);
             throw new UnauthorizedException(ErrorDto.builder()
-                    .msg(e.getMessage())
+                    .message(e.getMessage())
                     .exceptionClass(this.getClass().getSimpleName()).build());
         }
         return user != null;
