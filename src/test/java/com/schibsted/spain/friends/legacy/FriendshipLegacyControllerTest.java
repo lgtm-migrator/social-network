@@ -1,14 +1,18 @@
 package com.schibsted.spain.friends.legacy;
 
+import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.service.FriendshipService;
 import com.schibsted.spain.friends.service.UserService;
 import com.schibsted.spain.friends.utils.Utils;
+import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +33,9 @@ class FriendshipLegacyControllerTest {
 
     @Autowired
     FriendshipService friendshipService;
+
+    @MockBean
+    UserRepository userRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -201,6 +208,7 @@ class FriendshipLegacyControllerTest {
                 .header("X-Password", "j12345679"))
                 .andExpect(status().isUnauthorized());
 
+        Mockito.when(userRepository.getUser("samantha")).thenThrow(UnauthorizedException.class);
         mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
                 .param("username", "samantha")
                 .header("X-Password", "x12345678"))
