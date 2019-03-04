@@ -1,6 +1,7 @@
 package com.schibsted.spain.friends.repository;
 
 import com.schibsted.spain.friends.entity.User;
+import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
 import org.springframework.stereotype.Repository;
 
@@ -29,7 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
         return users.stream()
                 .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
                 .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(InvalidCredentialException::new);
     }
 
     @Override

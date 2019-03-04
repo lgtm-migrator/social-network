@@ -51,10 +51,10 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
     @Override
     public Boolean acceptFriendship(User requester, User requested) {
-        final boolean hasAcceptedRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, ACCEPTED) ||
-                isRequest(request, requested, requester, ACCEPTED));
-        final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING) ||
-                isRequest(request, requested, requester, PENDING));
+        final boolean hasAcceptedRequests = friendshipRequests.stream()
+                .anyMatch(request -> isRequest(request, requester, requested, ACCEPTED) || isRequest(request, requested, requester, ACCEPTED));
+        final boolean hasPendingRequests = friendshipRequests.stream()
+                .anyMatch(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING));
 
         if (hasAcceptedRequests) {
             throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester, requester));
@@ -62,9 +62,7 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
         if (hasPendingRequests) {
             friendshipRequests.stream()
-                    .filter(request -> isRequest(request, requester, requested, PENDING) ||
-                            isRequest(request, requested, requester, PENDING)
-                    )
+                    .filter(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING))
                     .forEach(request -> request.setStatus(ACCEPTED));
         } else {
             throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
@@ -78,7 +76,7 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
         if (hasPendingRequests) {
             friendshipRequests.stream()
-                    .filter(request -> isRequest(request, requested, requested, PENDING))
+                    .filter(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING))
                     .forEach(request -> request.setStatus(DECLINED));
         } else {
             throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
