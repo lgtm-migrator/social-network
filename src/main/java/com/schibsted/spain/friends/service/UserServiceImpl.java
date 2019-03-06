@@ -6,12 +6,16 @@ import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.utils.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 
 @Service
 @Slf4j
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider implements UserService {
 
     private final UserRepository userRepository;
 
@@ -88,5 +92,15 @@ public class UserServiceImpl implements UserService {
                     .exceptionClass(this.getClass().getSimpleName()).build());
         }
         return user != null;
+    }
+
+    @Override
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        // do nothing
+    }
+
+    @Override
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+        return userRepository.findUser(username, authentication.getCredentials().toString());
     }
 }

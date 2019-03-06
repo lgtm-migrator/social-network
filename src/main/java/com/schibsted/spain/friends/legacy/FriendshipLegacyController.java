@@ -1,7 +1,6 @@
 package com.schibsted.spain.friends.legacy;
 
 import com.schibsted.spain.friends.service.FriendshipService;
-import com.schibsted.spain.friends.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,11 +14,8 @@ public class FriendshipLegacyController {
 
     private final FriendshipService friendshipService;
 
-    private final UserService userService;
-
-    public FriendshipLegacyController(@Autowired FriendshipService friendshipService, @Autowired UserService userService) {
+    public FriendshipLegacyController(@Autowired FriendshipService friendshipService) {
         this.friendshipService = friendshipService;
-        this.userService = userService;
     }
 
     @PostMapping("/request")
@@ -27,7 +23,6 @@ public class FriendshipLegacyController {
     Boolean requestFriendship(@RequestParam("usernameFrom") String usernameFrom,
                               @RequestParam("usernameTo") String usernameTo,
                               @RequestHeader("X-Password") String password) {
-        userService.authenticate(usernameFrom, password);
         return friendshipService.requestFriendShip(usernameFrom, usernameTo);
     }
 
@@ -36,7 +31,6 @@ public class FriendshipLegacyController {
     Boolean acceptFriendship(@RequestParam("usernameFrom") String usernameFrom,
                              @RequestParam("usernameTo") String usernameTo,
                              @RequestHeader("X-Password") String password) {
-        userService.authenticate(usernameFrom, password);
         return friendshipService.acceptFriendShip(usernameFrom, usernameTo);
     }
 
@@ -45,7 +39,6 @@ public class FriendshipLegacyController {
     Boolean declineFriendship(@RequestParam("usernameFrom") String usernameFrom,
                               @RequestParam("usernameTo") String usernameTo,
                               @RequestHeader("X-Password") String password) {
-        userService.authenticate(usernameFrom, password);
         return friendshipService.declineFriendShip(usernameFrom, usernameTo);
     }
 
@@ -53,7 +46,6 @@ public class FriendshipLegacyController {
     @ApiOperation(value = "List user's friends")
     Object listFriends(@RequestParam("username") String username,
                        @RequestHeader("X-Password") String password) {
-        userService.authenticate(username, password);
         return friendshipService.listFriends(username);
     }
 }
