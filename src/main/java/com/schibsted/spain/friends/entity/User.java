@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Builder(toBuilder = true)
 @Getter
@@ -35,6 +36,11 @@ public class User implements UserDetails {
     @Override
     public int hashCode() {
         return Objects.hashCode(username);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("User: %s, password:%s, friends: %d", username, password, friends.size());
     }
 
     @Override
@@ -71,6 +77,7 @@ public class User implements UserDetails {
         return UserDTO.builder()
                 .username(this.username)
                 .password(this.password)
+                .friends(this.friends.stream().map(User::toDto).collect(Collectors.toList()))
                 .build();
     }
 
@@ -82,5 +89,11 @@ public class User implements UserDetails {
     public void fromDTO(UserDTO userDTO) {
         this.username = userDTO.getUsername();
         this.password = userDTO.getPassword();
+        this.friends = userDTO.getFriends().stream().map(userDTO1 -> {
+            User user = User.builder().build();
+            user.fromDTO(userDTO1);
+            return user;
+
+        }).collect(Collectors.toSet());
     }
 }

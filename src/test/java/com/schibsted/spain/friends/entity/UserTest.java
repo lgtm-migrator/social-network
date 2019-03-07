@@ -16,7 +16,8 @@ class UserTest {
                 .build();
 
         UserDTO userDTO = user.toDto();
-        assertThat(userDTO).isEqualToComparingFieldByField(user);
+        assertThat(userDTO).isEqualToIgnoringGivenFields(user, "friends");
+        assertThat(userDTO.getFriends()).zipSatisfy(user.getFriends(), (userDTO1, user1) -> assertThat(userDTO1.getUsername()).isEqualTo(user1.getUsername()));
     }
 
     @Test
@@ -30,6 +31,7 @@ class UserTest {
         User user = new User();
         user.fromDTO(userDTO);
 
-        assertThat(user).isEqualToComparingFieldByField(userDTO);
+        assertThat(user).isEqualToIgnoringGivenFields(userDTO, "friends");
+        assertThat(user.getFriends()).zipSatisfy(userDTO.getFriends(), (user1, userDTO1) -> assertThat(user1.getUsername()).isEqualTo(userDTO1.getUsername()));
     }
 }
