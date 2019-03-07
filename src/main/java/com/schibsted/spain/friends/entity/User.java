@@ -9,12 +9,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class User implements UserDetails {
     private String username;
     private String password;
@@ -78,13 +78,9 @@ public class User implements UserDetails {
      * Creates a new entity from a data transfer object
      *
      * @param userDTO {@link UserDTO} transfer object
-     * @return a {@link User} entity
      */
-    public User fromDTO(UserDTO userDTO) {
-        return User.builder()
-                .username(userDTO.getUsername())
-                .password(userDTO.getPassword())
-                .friends(userDTO.getFriends().stream().map(this::fromDTO).collect(Collectors.toList()))
-                .build();
+    public void fromDTO(UserDTO userDTO) {
+        this.username = userDTO.getUsername();
+        this.password = userDTO.getPassword();
     }
 }
