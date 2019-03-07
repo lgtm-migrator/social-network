@@ -2,7 +2,6 @@ package com.schibsted.spain.friends.repository;
 
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
-import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -21,16 +20,20 @@ class FriendshipRepositoryImplTest {
     void requestFriendshipTwice() {
 
         assertThat(friendshipRepository.requestFriendship(this.user1, user2)).isTrue();
-        assertThatExceptionOfType(AlreadyExistsException.class).isThrownBy(() -> friendshipRepository.requestFriendship(user1, user2));
-        assertThatExceptionOfType(AlreadyExistsException.class).isThrownBy(() -> friendshipRepository.requestFriendship(user2, user1));
+        assertThatExceptionOfType(AlreadyExistsException.class)
+                .isThrownBy(() -> friendshipRepository.requestFriendship(user1, user2));
+        assertThatExceptionOfType(AlreadyExistsException.class)
+                .isThrownBy(() -> friendshipRepository.requestFriendship(user2, user1));
     }
 
     @Test
+    @DisplayName("Accept friendship only once")
     void acceptFriendship() {
         friendshipRepository.requestFriendship(user1, user2);
         friendshipRepository.requestFriendship(user1, user3);
         assertThat(friendshipRepository.acceptFriendship(user1, user2)).isTrue();
-        assertThatExceptionOfType(NotFoundException.class).isThrownBy(() -> friendshipRepository.acceptFriendship(user1, user2));
+        assertThatExceptionOfType(AlreadyExistsException.class)
+                .isThrownBy(() -> friendshipRepository.acceptFriendship(user1, user2));
     }
 
 }

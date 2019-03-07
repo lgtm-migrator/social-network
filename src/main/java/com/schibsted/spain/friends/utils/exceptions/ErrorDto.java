@@ -8,7 +8,7 @@ import lombok.Data;
 public class ErrorDto {
 
     private long code;
-    private String msg;
+    private String message;
     private String exceptionClass;
 
 }

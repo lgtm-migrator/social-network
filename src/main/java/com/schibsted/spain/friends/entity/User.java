@@ -1,18 +1,26 @@
 package com.schibsted.spain.friends.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import com.schibsted.spain.friends.dto.UserDTO;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
-public class User {
+@NoArgsConstructor
+@AllArgsConstructor
+public class User implements UserDetails {
     private String username;
     private String password;
+
+    @Singular
     private Set<User> friends;
 
     @Override
@@ -28,5 +36,56 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hashCode(username);
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    /**
+     * creates a data transfer object from an entity
+     *
+     * @return a new {@link UserDTO} transfer object
+     */
+    public UserDTO toDto() {
+        return UserDTO.builder()
+                .username(this.username)
+                .password(this.password)
+                .build();
+    }
+
+    /**
+     * Creates a new entity from a data transfer object
+     *
+     * @param userDTO {@link UserDTO} transfer object
+     * @return a {@link User} entity
+     */
+    public User fromDTO(UserDTO userDTO) {
+        return User.builder()
+                .username(userDTO.getUsername())
+                .password(userDTO.getPassword())
+                .friends(userDTO.getFriends().stream().map(this::fromDTO).collect(Collectors.toList()))
+                .build();
     }
 }

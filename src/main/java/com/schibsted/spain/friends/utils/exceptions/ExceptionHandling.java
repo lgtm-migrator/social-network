@@ -31,6 +31,12 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
         return buildResponse(ex.getCode(), ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {UnauthorizedException.class})
+    @ResponseBody
+    protected ResponseEntity<ErrorDto> handleConflict(UnauthorizedException ex, WebRequest request) {
+        return buildResponse(ex.getCode(), ex, HttpStatus.UNAUTHORIZED);
+    }
+
     @ExceptionHandler(value = {NotFoundException.class})
     @ResponseBody
     protected ResponseEntity<ErrorDto> handleConflict(NotFoundException ex, WebRequest request) {
@@ -46,7 +52,7 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorDto> buildResponse(long code, Exception ex, HttpStatus status) {
         ErrorDto errorDto = ErrorDto.builder()
                 .code(code)
-                .msg(ex.getMessage())
+                .message(ex.getMessage())
                 .exceptionClass(ex.getClass().getSimpleName())
                 .build();
         return new ResponseEntity<>(errorDto, status);

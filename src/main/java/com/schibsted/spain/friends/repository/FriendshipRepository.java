@@ -8,5 +8,5 @@ public interface FriendshipRepository {
 
     Boolean acceptFriendship(User requester, User requested);
 
-    Boolean declineFriendship(String requester, String requested);
+    Boolean declineFriendship(User requester, User requested);
 }

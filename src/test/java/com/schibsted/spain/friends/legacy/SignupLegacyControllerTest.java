@@ -1,5 +1,6 @@
 package com.schibsted.spain.friends.legacy;
 
+import com.schibsted.spain.friends.service.FriendshipService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,6 +20,9 @@ class SignupLegacyControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    FriendshipService friendshipService;
 
     @Test
     @DisplayName("Signup with invalid data")

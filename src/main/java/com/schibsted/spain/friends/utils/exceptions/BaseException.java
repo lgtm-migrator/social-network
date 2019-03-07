@@ -20,7 +20,7 @@ public abstract class BaseException extends RuntimeException {
     }
 
     public BaseException(ErrorDto error) {
-        super(error.getMsg());
+        super(error.getMessage());
         this.code = error.getCode();
     }
 

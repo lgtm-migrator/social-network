@@ -4,6 +4,7 @@ import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.FriendshipRepository;
 import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.utils.exceptions.BusinessException;
+import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -19,38 +20,51 @@ public class FriendshipServiceImpl implements FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
 
-    public FriendshipServiceImpl(@Autowired UserRepository userRepository, @Autowired FriendshipRepository friendshipRepository) {
+    private final UserService userService;
+
+    public FriendshipServiceImpl(@Autowired UserRepository userRepository, @Autowired FriendshipRepository friendshipRepository, @Autowired UserService userService) {
         this.userRepository = userRepository;
         this.friendshipRepository = friendshipRepository;
+        this.userService = userService;
     }
 
     @Override
     public Boolean requestFriendShip(String requester, String requested) {
         if (requester.equals(requested)) {
-            throw new BusinessException(String.format("The user %s cannot make a friend request to himself", requester));
+            throw new BusinessException(
+                    String.format("The user %s cannot make a friend request to himself", requester));
         } else {
             try {
-                Tuple2 users = getUsers(requester, requested);
-                User requesterUser = (User) users._1;
-                User requestedUser = (User) users._2;
+                Tuple2<User, User> users = getUsers(requester, requested);
+                User requesterUser = users._1;
+                User requestedUser = users._2;
                 return friendshipRepository.requestFriendship(requesterUser, requestedUser);
             } catch (Exception e) {
-                throw new NotFoundException("user not found", e);
+                throw new NotFoundException(ErrorDto.builder()
+                        .message("User not found")
+                        .exceptionClass(this.getClass().getSimpleName())
+                        .build());
             }
         }
     }
 
     @Override
     public Boolean acceptFriendShip(String requester, String requested) {
-        Tuple2 users = getUsers(requester, requested);
-        User requesterUser = (User) users._1;
-        User requestedUser = (User) users._2;
-        return friendshipRepository.acceptFriendship(requesterUser, requestedUser);
+        Tuple2<User, User> users = getUsers(requester, requested);
+        User requesterUser = users._1;
+        User requestedUser = users._2;
+        if (friendshipRepository.acceptFriendship(requesterUser, requestedUser)) {
+            userService.addFriend(requester, requested);
+        }
+        return true;
     }
 
     @Override
     public Boolean declineFriendShip(String requester, String requested) {
-        return friendshipRepository.declineFriendship(requester, requested);
+        Tuple2<User, User> users = getUsers(requester, requested);
+        User requesterUser = users._1;
+        User requestedUser = users._2;
+        return friendshipRepository.declineFriendship(requesterUser, requestedUser);
     }
 
     @Override
@@ -59,7 +73,10 @@ public class FriendshipServiceImpl implements FriendshipService {
             User result = userRepository.getUser(user);
             return result.getFriends();
         } catch (Exception e) {
-            throw new NotFoundException(String.format("user %s not found", user), e);
+            throw new NotFoundException(ErrorDto.builder()
+                    .message(String.format("user %s not found, cause: %s", user, e.getMessage()))
+                    .exceptionClass(this.getClass().getSimpleName())
+                    .build());
         }
     }
 

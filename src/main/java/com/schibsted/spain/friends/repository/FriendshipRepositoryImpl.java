@@ -11,8 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.HashSet;
 import java.util.Set;
 
-import static com.schibsted.spain.friends.entity.FriendRequestStatus.ACCEPTED;
-import static com.schibsted.spain.friends.entity.FriendRequestStatus.PENDING;
+import static com.schibsted.spain.friends.entity.FriendRequestStatus.*;
 
 @Repository
 public class FriendshipRepositoryImpl implements FriendshipRepository {
@@ -38,22 +37,24 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
         } else {
             throw new AlreadyExistsException(ErrorDto.builder()
-                    .msg(String.format("There is a pending request between %s and %s", requesterUser.getUsername(), requestedUser.getUsername()))
+                    .message(String.format("There is a pending request between %s and %s", requesterUser.getUsername(), requestedUser.getUsername()))
                     .exceptionClass(this.getClass().getSimpleName())
                     .build());
         }
     }
 
     private boolean isRequest(FriendshipRequest request, User userFrom, User userTo, FriendRequestStatus status) {
-        return request.getRequestedUser().equals(userFrom) &&
-                request.getRequesterUser().equals(userTo) &&
+        return request.getRequestedUser().getUsername().equalsIgnoreCase(userFrom.getUsername()) &&
+                request.getRequesterUser().getUsername().equalsIgnoreCase(userTo.getUsername()) &&
                 request.getStatus().equals(status);
     }
 
     @Override
     public Boolean acceptFriendship(User requester, User requested) {
-        final boolean hasAcceptedRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, ACCEPTED));
-        final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING));
+        final boolean hasAcceptedRequests = friendshipRequests.stream()
+                .anyMatch(request -> isRequest(request, requester, requested, ACCEPTED) || isRequest(request, requested, requester, ACCEPTED));
+        final boolean hasPendingRequests = friendshipRequests.stream()
+                .anyMatch(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING));
 
         if (hasAcceptedRequests) {
             throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester, requester));
@@ -61,9 +62,7 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
         if (hasPendingRequests) {
             friendshipRequests.stream()
-                    .filter(request -> isRequest(request, requester, requested, PENDING) ||
-                            isRequest(request, requested, requester, PENDING)
-                    )
+                    .filter(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING))
                     .forEach(request -> request.setStatus(ACCEPTED));
         } else {
             throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
@@ -72,7 +71,17 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     }
 
     @Override
-    public Boolean declineFriendship(String requester, String requested) {
+    public Boolean declineFriendship(User requester, User requested) {
+        final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING));
+
+        if (hasPendingRequests) {
+            friendshipRequests.stream()
+                    .filter(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING))
+                    .forEach(request -> request.setStatus(DECLINED));
+        } else {
+            throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
+        }
+
         return false;
     }
 }
