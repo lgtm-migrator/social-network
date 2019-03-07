@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +75,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
 
     /**
      * Looks for a user by its username an password
+     *
      * @param username username
      * @param password password
      * @return true if the user is found, an {@link UnauthorizedException} otherwise
@@ -95,12 +95,15 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
     }
 
     @Override
-    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected void additionalAuthenticationChecks(UserDetails userDetails, UsernamePasswordAuthenticationToken authentication) {
         // do nothing
     }
 
     @Override
-    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
+    protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken authentication) {
+        if (log.isDebugEnabled()) {
+            log.debug("Attempting authentication for user {} with credentials {}", username, authentication.getCredentials().toString());
+        }
         return userRepository.findUser(username, authentication.getCredentials().toString());
     }
 }

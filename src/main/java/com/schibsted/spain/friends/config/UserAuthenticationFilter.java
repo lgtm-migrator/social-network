@@ -1,9 +1,8 @@
 package com.schibsted.spain.friends.config;
 
-import org.springframework.security.authentication.BadCredentialsException;
+import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -27,9 +26,10 @@ public class UserAuthenticationFilter extends AbstractAuthenticationProcessingFi
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        final String token = ofNullable(request.getHeader("X-password")).orElseThrow(() -> new BadCredentialsException("password missing"));
-        final Authentication authentication = new UsernamePasswordAuthenticationToken(token, token);
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws InvalidCredentialException {
+        final String token = ofNullable(request.getHeader("X-password")).orElseThrow(() -> new InvalidCredentialException("password missing"));
+        final String user = ofNullable(request.getParameter("usernameFrom")).orElseThrow(() -> new InvalidCredentialException("username missing"));
+        final Authentication authentication = new UsernamePasswordAuthenticationToken(user, token);
         return getAuthenticationManager().authenticate(authentication);
     }
 
