@@ -3,12 +3,15 @@ package com.schibsted.spain.friends.repository;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Repository
+@Slf4j
+
 public class UserRepositoryImpl implements UserRepository {
 
     private Set<User> users = new HashSet<>();
@@ -27,6 +30,9 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User findUser(String username, String password) {
+        if (log.isDebugEnabled()) {
+            log.debug("Users: {}", users);
+        }
         return users.stream()
                 .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
                 .findFirst()

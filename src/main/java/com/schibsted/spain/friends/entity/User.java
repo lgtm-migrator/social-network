@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @NoArgsConstructor
