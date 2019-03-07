@@ -39,6 +39,11 @@ public class User implements UserDetails {
     }
 
     @Override
+    public String toString() {
+        return String.format("User: %s, password:%s, friends: %d", username, password, friends.size());
+    }
+
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();
     }
@@ -72,6 +77,7 @@ public class User implements UserDetails {
         return UserDTO.builder()
                 .username(this.username)
                 .password(this.password)
+                .friends(this.friends.parallelStream().map(User::toDto).collect(Collectors.toList()))
                 .build();
     }
 
@@ -79,13 +85,15 @@ public class User implements UserDetails {
      * Creates a new entity from a data transfer object
      *
      * @param userDTO {@link UserDTO} transfer object
-     * @return a {@link User} entity
      */
-    public User fromDTO(UserDTO userDTO) {
-        return User.builder()
-                .username(userDTO.getUsername())
-                .password(userDTO.getPassword())
-                .friends(userDTO.getFriends().stream().map(this::fromDTO).collect(Collectors.toList()))
-                .build();
+    public void fromDTO(UserDTO userDTO) {
+        this.username = userDTO.getUsername();
+        this.password = userDTO.getPassword();
+        this.friends = userDTO.getFriends().parallelStream().map(userDTO1 -> {
+            User user = User.builder().build();
+            user.fromDTO(userDTO1);
+            return user;
+
+        }).collect(Collectors.toSet());
     }
 }
