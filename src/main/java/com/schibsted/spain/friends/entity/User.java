@@ -77,7 +77,7 @@ public class User implements UserDetails {
         return UserDTO.builder()
                 .username(this.username)
                 .password(this.password)
-                .friends(this.friends.stream().map(User::toDto).collect(Collectors.toList()))
+                .friends(this.friends.parallelStream().map(User::toDto).collect(Collectors.toList()))
                 .build();
     }
 
@@ -89,7 +89,7 @@ public class User implements UserDetails {
     public void fromDTO(UserDTO userDTO) {
         this.username = userDTO.getUsername();
         this.password = userDTO.getPassword();
-        this.friends = userDTO.getFriends().stream().map(userDTO1 -> {
+        this.friends = userDTO.getFriends().parallelStream().map(userDTO1 -> {
             User user = User.builder().build();
             user.fromDTO(userDTO1);
             return user;
