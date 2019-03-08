@@ -57,7 +57,7 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
                 .anyMatch(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING));
 
         if (hasAcceptedRequests) {
-            throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester, requester));
+            throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester.getUsername(), requester.getUsername()));
         }
 
         if (hasPendingRequests) {
