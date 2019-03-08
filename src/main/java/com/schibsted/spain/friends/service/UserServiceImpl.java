@@ -11,7 +11,6 @@ import org.springframework.security.authentication.dao.AbstractUserDetailsAuthen
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-
 @Service
 @Slf4j
 public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider implements UserService {

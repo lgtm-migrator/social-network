@@ -92,7 +92,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         final UserAuthenticationFilter filter = new UserAuthenticationFilter(PROTECTED_URLS);
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(successHandler());
-        //FIXME filter.setAuthenticationFailureHandler();
         return filter;
     }
 

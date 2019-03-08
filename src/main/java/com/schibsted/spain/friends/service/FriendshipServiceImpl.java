@@ -1,5 +1,6 @@
 package com.schibsted.spain.friends.service;
 
+import com.schibsted.spain.friends.dto.UserDTO;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.FriendshipRepository;
 import com.schibsted.spain.friends.repository.UserRepository;
@@ -11,7 +12,7 @@ import io.vavr.Tuple2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.List;
 
 @Service
 public class FriendshipServiceImpl implements FriendshipService {
@@ -68,9 +69,9 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Set<User> listFriends(String user) {
+    public List<UserDTO> listFriends(String user) {
         try {
-            User result = userRepository.getUser(user);
+            UserDTO result = userRepository.getUser(user).toDto();
             return result.getFriends();
         } catch (Exception e) {
             throw new NotFoundException(ErrorDto.builder()
