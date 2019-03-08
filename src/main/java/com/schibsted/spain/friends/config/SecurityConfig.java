@@ -106,7 +106,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     /**
-     * Disable Spring boot automatic filter registration.
+     * Disable Spring boot automatic filter registration, otherwise the filter is registered twice
      */
     @Bean
     FilterRegistrationBean<UserAuthenticationFilter> disableAutoRegistration(final UserAuthenticationFilter filter) {

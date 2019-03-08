@@ -14,7 +14,6 @@ public class FriendshipRequest {
     private User requestedUser;
     private FriendRequestStatus status;
 
-
     public void fromDTO(FriendshipRequestDTO friendshipRequestDTO) {
         this.status = Optional.ofNullable(friendshipRequestDTO.getStatus()).map(FriendRequestStatus::valueOf).orElse(null);
     }

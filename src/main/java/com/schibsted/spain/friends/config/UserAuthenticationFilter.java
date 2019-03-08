@@ -26,7 +26,7 @@ public class UserAuthenticationFilter extends AbstractAuthenticationProcessingFi
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws InvalidCredentialException {
+    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         final String token = ofNullable(request.getHeader("X-password")).orElseThrow(() -> new InvalidCredentialException("password missing"));
         final String user = ofNullable(request.getParameter("usernameFrom")).orElseThrow(() -> new InvalidCredentialException("username missing"));
         final Authentication authentication = new UsernamePasswordAuthenticationToken(user, token);
