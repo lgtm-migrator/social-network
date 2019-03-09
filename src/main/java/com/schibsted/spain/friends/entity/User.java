@@ -30,7 +30,7 @@ public class User implements UserDetails {
             return false;
         if (obj == this)
             return true;
-        return this.getUsername().equals(((User) obj).getUsername());
+        return this.username.equals(((User) obj).username);
     }
 
     @Override
