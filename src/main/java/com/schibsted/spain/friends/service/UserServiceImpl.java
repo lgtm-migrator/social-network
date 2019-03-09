@@ -59,7 +59,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      * Add Users as friends to each other
      *
      * @param username  - user
-     * @param username2 - useer
+     * @param username2 - user
      * @return true if Successful operation
      */
     @Override
