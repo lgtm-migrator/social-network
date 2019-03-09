@@ -31,6 +31,12 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
         return buildResponse(ex.getCode(), ex, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(value = {InvalidCredentialException.class})
+    @ResponseBody
+    protected ResponseEntity<ErrorDto> handleConflict(InvalidCredentialException ex, WebRequest request) {
+        return buildResponse(ex.getCode(), ex, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(value = {UnauthorizedException.class})
     @ResponseBody
     protected ResponseEntity<ErrorDto> handleConflict(UnauthorizedException ex, WebRequest request) {

@@ -1,8 +1,11 @@
 package com.schibsted.spain.friends.config;
 
 import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
@@ -14,6 +17,7 @@ import java.io.IOException;
 
 import static java.util.Optional.ofNullable;
 
+@Slf4j
 public class UserAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
 
@@ -28,9 +32,17 @@ public class UserAuthenticationFilter extends AbstractAuthenticationProcessingFi
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         final String token = ofNullable(request.getHeader("X-password")).orElseThrow(() -> new InvalidCredentialException("password missing"));
-        final String user = ofNullable(request.getParameter("usernameFrom")).orElseThrow(() -> new InvalidCredentialException("username missing"));
+        final String userParam = ofNullable(request.getParameter("usernameFrom")).orElse(request.getParameter("username"));
+        final String user = ofNullable(userParam).orElseThrow(() -> new InvalidCredentialException("username missing"));
         final Authentication authentication = new UsernamePasswordAuthenticationToken(user, token);
-        return getAuthenticationManager().authenticate(authentication);
+        Authentication authenticate;
+        try {
+            authenticate = getAuthenticationManager().authenticate(authentication);
+        } catch (AuthenticationException | InvalidCredentialException e) {
+            log.error(e.getMessage(), e);
+            throw new BadCredentialsException(e.getMessage(), e);
+        }
+        return authenticate;
     }
 
     @Override

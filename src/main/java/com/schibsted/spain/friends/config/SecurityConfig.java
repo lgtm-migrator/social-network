@@ -86,6 +86,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return successHandler;
     }
 
+
     @Bean
     UserAuthenticationFilter restAuthenticationFilter() throws Exception {
         final UserAuthenticationFilter filter = new UserAuthenticationFilter(PROTECTED_URLS);
