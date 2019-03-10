@@ -1,9 +1,13 @@
 package com.schibsted.spain.friends.service;
 
 import com.google.common.base.Preconditions;
+import com.schibsted.spain.friends.dto.UserDTO;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.UserRepository;
-import com.schibsted.spain.friends.utils.exceptions.*;
+import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
+import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
+import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
+import com.schibsted.spain.friends.utils.exceptions.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +33,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      * @return true if valid, false if invalid
      */
     @Override
-    public Boolean signup(String username, String password) {
+    public UserDTO signup(String username, String password) {
         try {
             if (log.isDebugEnabled()) {
                 log.debug("Signup attempt: user {}", username);
@@ -38,14 +42,8 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
             Preconditions.checkNotNull(password, "Password cannot be null");
             Preconditions.checkArgument(username.matches("[a-zA-Z0-9]{5,10}+"), String.format("Invalid format: username  %s should be alphanumeric and between 5 and 10 characters", username));
             Preconditions.checkArgument(password.matches("[a-zA-Z0-9]{8,12}+"), String.format("Invalid format: password %s should be alphanumeric and between 8 and 12 characters", password));
-            Boolean result = userRepository.addUser(username, password);
-            if (!result) {
-                throw new AlreadyExistsException(ErrorDto.builder()
-                        .message(String.format("User %s already exists", username))
-                        .exceptionClass(this.getClass().getSimpleName())
-                        .build());
-            }
-            return result;
+            User result = userRepository.addUser(username, password);
+            return result.toDto();
         } catch (NullPointerException | IllegalArgumentException e) {
             log.error("Signup error: {}", e.getMessage());
             throw new ValidationException(ErrorDto.builder()
@@ -63,13 +61,12 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      * @return true if Successful operation
      */
     @Override
-    public Boolean addFriend(String username, String username2) {
+    public UserDTO addFriend(String username, String username2) {
         User userFriend = userRepository.getUser(username);
         User userFriend2 = userRepository.getUser(username2);
 
-        userFriend.getFriends().add(userFriend2);
-        userFriend2.getFriends().add(userFriend);
-        return userRepository.updateUser(userFriend) && userRepository.updateUser(userFriend2);
+        userFriend = userRepository.addFriend(userFriend, userFriend2);
+        return userFriend.toDto();
     }
 
     /**
@@ -80,7 +77,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      * @return true if the user is found, an {@link UnauthorizedException} otherwise
      */
     @Override
-    public Boolean authenticate(String username, String password) {
+    public UserDTO authenticate(String username, String password) {
         User user;
         try {
             user = userRepository.findUser(username, password);
@@ -90,7 +87,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
                     .message(e.getMessage())
                     .exceptionClass(this.getClass().getSimpleName()).build());
         }
-        return user != null;
+        return user.toDto();
     }
 
     @Override

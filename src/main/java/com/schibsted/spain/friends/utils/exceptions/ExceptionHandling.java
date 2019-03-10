@@ -1,6 +1,7 @@
 package com.schibsted.spain.friends.utils.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,58 +16,44 @@ public class ExceptionHandling extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(value = {BusinessException.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(BusinessException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    protected ResponseEntity<Object> handleConflict(BusinessException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
     }
 
     @ExceptionHandler(value = {AlreadyExistsException.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(AlreadyExistsException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<Object> handleConflict(AlreadyExistsException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = {ValidationException.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(ValidationException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<Object> handleConflict(ValidationException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = {InvalidCredentialException.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(InvalidCredentialException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<Object> handleConflict(InvalidCredentialException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @ExceptionHandler(value = {UnauthorizedException.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(UnauthorizedException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(value = {InvalidCredentialException.class})
-    @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(InvalidCredentialException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.UNAUTHORIZED);
+    protected ResponseEntity<Object> handleConflict(UnauthorizedException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler(value = {NotFoundException.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(NotFoundException ex, WebRequest request) {
-        return buildResponse(ex.getCode(), ex, HttpStatus.NOT_FOUND);
+    protected ResponseEntity<Object> handleConflict(NotFoundException ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler(value = {Exception.class})
     @ResponseBody
-    protected ResponseEntity<ErrorDto> handleConflict(Exception ex, WebRequest request) {
-        return buildResponse(-1, ex, HttpStatus.BAD_REQUEST);
+    protected ResponseEntity<Object> handleConflict(Exception ex, WebRequest request) {
+        return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
-    private ResponseEntity<ErrorDto> buildResponse(long code, Exception ex, HttpStatus status) {
-        ErrorDto errorDto = ErrorDto.builder()
-                .code(code)
-                .message(ex.getMessage())
-                .exceptionClass(ex.getClass().getSimpleName())
-                .build();
-        return new ResponseEntity<>(errorDto, status);
-    }
 }

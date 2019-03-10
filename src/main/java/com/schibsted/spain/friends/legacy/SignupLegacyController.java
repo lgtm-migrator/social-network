@@ -1,5 +1,6 @@
 package com.schibsted.spain.friends.legacy;
 
+import com.schibsted.spain.friends.dto.UserDTO;
 import com.schibsted.spain.friends.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -24,8 +25,7 @@ public class SignupLegacyController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @ApiOperation(nickname = "user signup", value = "user signup")
-    ResponseEntity signUp(@RequestParam(USERNAME) String username, @RequestHeader(X_PASS) String password) {
-        userService.signup(username, password);
-        return ResponseEntity.ok().build();
+    ResponseEntity<UserDTO> signUp(@RequestParam(USERNAME) String username, @RequestHeader(X_PASS) String password) {
+        return ResponseEntity.ok(userService.signup(username, password));
     }
 }

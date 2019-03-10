@@ -1,6 +1,8 @@
 package com.schibsted.spain.friends.service;
 
+import com.schibsted.spain.friends.dto.FriendshipRequestDTO;
 import com.schibsted.spain.friends.dto.UserDTO;
+import com.schibsted.spain.friends.entity.FriendshipRequest;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.FriendshipRepository;
 import com.schibsted.spain.friends.repository.UserRepository;
@@ -12,7 +14,9 @@ import io.vavr.Tuple2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FriendshipServiceImpl implements FriendshipService {
@@ -30,7 +34,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Boolean requestFriendShip(String requester, String requested) {
+    public FriendshipRequestDTO requestFriendShip(String requester, String requested) {
         if (requester.equals(requested)) {
             throw new BusinessException(
                     String.format("The user %s cannot make a friend request to himself", requester));
@@ -39,7 +43,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                 Tuple2<User, User> users = getUsers(requester, requested);
                 User requesterUser = users._1;
                 User requestedUser = users._2;
-                return friendshipRepository.requestFriendship(requesterUser, requestedUser);
+                return friendshipRepository.requestFriendship(requesterUser, requestedUser).toDTO();
             } catch (Exception e) {
                 throw new NotFoundException(ErrorDto.builder()
                         .message("User not found")
@@ -50,29 +54,31 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public Boolean acceptFriendShip(String requester, String requested) {
+    public FriendshipRequestDTO acceptFriendShip(String requester, String requested) {
         Tuple2<User, User> users = getUsers(requester, requested);
         User requesterUser = users._1;
         User requestedUser = users._2;
-        if (friendshipRepository.acceptFriendship(requesterUser, requestedUser)) {
-            userService.addFriend(requester, requested);
-        }
-        return true;
+        final FriendshipRequest acceptFriendship = friendshipRepository.acceptFriendship(requesterUser, requestedUser);
+        userService.addFriend(requester, requested);
+        return acceptFriendship.toDTO();
     }
 
     @Override
-    public Boolean declineFriendShip(String requester, String requested) {
+    public FriendshipRequestDTO declineFriendShip(String requester, String requested) {
         Tuple2<User, User> users = getUsers(requester, requested);
         User requesterUser = users._1;
         User requestedUser = users._2;
-        return friendshipRepository.declineFriendship(requesterUser, requestedUser);
+        return friendshipRepository.declineFriendship(requesterUser, requestedUser).toDTO();
     }
 
     @Override
-    public List<UserDTO> listFriends(String user) {
+    public List<String> listFriends(String user) {
         try {
             UserDTO result = userRepository.getUser(user).toDto();
-            return result.getFriends();
+            return result.getFriends().stream()
+                    .map(UserDTO::getUsername)
+                    .sorted(Comparator.reverseOrder())//Ordering compliant
+                    .collect(Collectors.toList());
         } catch (Exception e) {
             throw new NotFoundException(ErrorDto.builder()
                     .message(String.format("user %s not found, cause: %s", user, e.getMessage()))

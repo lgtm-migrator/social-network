@@ -1,7 +1,10 @@
 package com.schibsted.spain.friends.entity;
 
 import com.schibsted.spain.friends.dto.UserDTO;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,5 +36,19 @@ class UserTest {
 
         assertThat(user).isEqualToIgnoringGivenFields(userDTO, "friends");
         assertThat(user.getFriends()).zipSatisfy(userDTO.getFriends(), (user1, userDTO1) -> assertThat(user1.getUsername()).isEqualTo(userDTO1.getUsername()));
+    }
+
+    @Test
+    @DisplayName("Self Recursion test")
+    void recursion() {
+        User johnDoe = User.builder().username("johnDoe").build();
+        User roseanne = User.builder().username("roseanne").friend(johnDoe).build();
+        johnDoe.setFriends(Collections.singleton(roseanne));
+
+        UserDTO johnDTO = johnDoe.toDto();
+        assertThat(johnDTO.getFriends().size()).isEqualTo(1);
+        final UserDTO firstFriend = johnDTO.getFriends().get(0);
+        assertThat(firstFriend).isNotNull();
+        assertThat(firstFriend.getUsername()).isEqualTo(roseanne.getUsername());
     }
 }
