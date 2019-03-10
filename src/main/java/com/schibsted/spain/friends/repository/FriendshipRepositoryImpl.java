@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static com.schibsted.spain.friends.entity.FriendRequestStatus.*;
 
@@ -19,21 +20,23 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     private Set<FriendshipRequest> friendshipRequests = new HashSet<>();
 
     @Override
-    public Boolean requestFriendship(User requesterUser, User requestedUser) {
+    public FriendshipRequest requestFriendship(User requesterUser, User requestedUser) {
 
-        final boolean noPendingRequestMatch = friendshipRequests.stream()
+        final boolean hasNoPendingOrAcceptedRequest = friendshipRequests.stream()
                 .noneMatch(request ->
                         isRequest(request, requestedUser, requesterUser, PENDING) ||
                                 isRequest(request, requesterUser, requestedUser, PENDING) ||
                                 isRequest(request, requestedUser, requesterUser, ACCEPTED) ||
                                 isRequest(request, requesterUser, requestedUser, ACCEPTED));
 
-        if (noPendingRequestMatch) {
-            return friendshipRequests.add(FriendshipRequest.builder()
+        if (hasNoPendingOrAcceptedRequest) {
+            final FriendshipRequest friendshipRequest = FriendshipRequest.builder()
                     .requestedUser(requestedUser)
                     .requesterUser(requesterUser)
                     .status(PENDING)
-                    .build());
+                    .build();
+            friendshipRequests.add(friendshipRequest);
+            return friendshipRequest;
 
         } else {
             throw new AlreadyExistsException(ErrorDto.builder()
@@ -50,14 +53,15 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     }
 
     @Override
-    public Boolean acceptFriendship(User requester, User requested) {
+    public FriendshipRequest acceptFriendship(User requester, User requested) {
+        final Predicate<FriendshipRequest> acceptedRequestPredicate = request -> isRequest(request, requester, requested, ACCEPTED) || isRequest(request, requested, requester, ACCEPTED);
         final boolean hasAcceptedRequests = friendshipRequests.stream()
-                .anyMatch(request -> isRequest(request, requester, requested, ACCEPTED) || isRequest(request, requested, requester, ACCEPTED));
+                .anyMatch(acceptedRequestPredicate);
         final boolean hasPendingRequests = friendshipRequests.stream()
                 .anyMatch(request -> isRequest(request, requester, requested, PENDING) || isRequest(request, requested, requester, PENDING));
 
         if (hasAcceptedRequests) {
-            throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester, requester));
+            throw new AlreadyExistsException(String.format("A friend request from %s has been already accepted by %s", requester.getUsername(), requester.getUsername()));
         }
 
         if (hasPendingRequests) {
@@ -67,11 +71,12 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
         } else {
             throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
         }
-        return true;
+        return friendshipRequests.stream().filter(acceptedRequestPredicate).findFirst().orElse(null);
     }
 
     @Override
-    public Boolean declineFriendship(User requester, User requested) {
+    public FriendshipRequest declineFriendship(User requester, User requested) {
+        final Predicate<FriendshipRequest> declinedRequestPredicate = request -> isRequest(request, requester, requested, DECLINED) || isRequest(request, requested, requester, DECLINED);
         final boolean hasPendingRequests = friendshipRequests.stream().anyMatch(request -> isRequest(request, requester, requested, PENDING));
 
         if (hasPendingRequests) {
@@ -82,6 +87,6 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
             throw new NotFoundException(String.format("No pending requests between %s and %s", requester, requested));
         }
 
-        return false;
+        return friendshipRequests.stream().filter(declinedRequestPredicate).findFirst().orElse(null);
     }
 }

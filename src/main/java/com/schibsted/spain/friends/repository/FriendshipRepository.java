@@ -1,12 +1,13 @@
 package com.schibsted.spain.friends.repository;
 
+import com.schibsted.spain.friends.entity.FriendshipRequest;
 import com.schibsted.spain.friends.entity.User;
 
 public interface FriendshipRepository {
 
-    Boolean requestFriendship(User requesterUser, User requestedUser);
+    FriendshipRequest requestFriendship(User requesterUser, User requestedUser);
 
-    Boolean acceptFriendship(User requester, User requested);
+    FriendshipRequest acceptFriendship(User requester, User requested);
 
-    Boolean declineFriendship(User requester, User requested);
+    FriendshipRequest declineFriendship(User requester, User requested);
 }

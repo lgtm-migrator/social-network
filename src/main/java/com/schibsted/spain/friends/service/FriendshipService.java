@@ -1,18 +1,18 @@
 package com.schibsted.spain.friends.service;
 
-import com.schibsted.spain.friends.entity.User;
+import com.schibsted.spain.friends.dto.FriendshipRequestDTO;
 import org.springframework.stereotype.Service;
 
-import java.util.Set;
+import java.util.List;
 
 @Service
 public interface FriendshipService {
 
-    Boolean requestFriendShip(String requester, String requested);
+    FriendshipRequestDTO requestFriendShip(String requester, String requested);
 
-    Boolean acceptFriendShip(String requester, String requested);
+    FriendshipRequestDTO acceptFriendShip(String requester, String requested);
 
-    Boolean declineFriendShip(String requester, String requested);
+    FriendshipRequestDTO declineFriendShip(String requester, String requested);
 
-    Set<User> listFriends(String user);
+    List<String> listFriends(String user);
 }

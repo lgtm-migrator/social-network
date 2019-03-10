@@ -1,13 +1,14 @@
 package com.schibsted.spain.friends.service;
 
+import com.schibsted.spain.friends.dto.UserDTO;
 import org.springframework.stereotype.Service;
 
 @Service
 public interface UserService {
 
-    Boolean signup(String username, String password);
+    UserDTO signup(String username, String password);
 
-    Boolean addFriend(String username, String username2);
+    UserDTO addFriend(String username, String username2);
 
-    Boolean authenticate(String username, String password);
+    UserDTO authenticate(String username, String password);
 }

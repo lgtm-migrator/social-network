@@ -1,10 +1,12 @@
 package com.schibsted.spain.friends.repository;
 
+import com.schibsted.spain.friends.entity.FriendshipRequest;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.schibsted.spain.friends.entity.FriendRequestStatus.ACCEPTED;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -19,7 +21,7 @@ class FriendshipRepositoryImplTest {
     @DisplayName("should not allow two pending requests for the same user")
     void requestFriendshipTwice() {
 
-        assertThat(friendshipRepository.requestFriendship(this.user1, user2)).isTrue();
+        assertThat(friendshipRepository.requestFriendship(this.user1, user2)).isNotNull();
         assertThatExceptionOfType(AlreadyExistsException.class)
                 .isThrownBy(() -> friendshipRepository.requestFriendship(user1, user2));
         assertThatExceptionOfType(AlreadyExistsException.class)
@@ -28,10 +30,15 @@ class FriendshipRepositoryImplTest {
 
     @Test
     @DisplayName("Accept friendship only once")
-    void acceptFriendship() {
+    void acceptFriendshipTwice() {
         friendshipRepository.requestFriendship(user1, user2);
         friendshipRepository.requestFriendship(user1, user3);
-        assertThat(friendshipRepository.acceptFriendship(user1, user2)).isTrue();
+        assertThat(friendshipRepository.acceptFriendship(user1, user2))
+                .isEqualTo(FriendshipRequest.builder()
+                        .requestedUser(user2)
+                        .requesterUser(user1)
+                        .status(ACCEPTED)
+                        .build());
         assertThatExceptionOfType(AlreadyExistsException.class)
                 .isThrownBy(() -> friendshipRepository.acceptFriendship(user1, user2));
     }

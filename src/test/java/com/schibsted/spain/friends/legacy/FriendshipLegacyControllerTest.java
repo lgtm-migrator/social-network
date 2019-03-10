@@ -4,11 +4,11 @@ import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.service.FriendshipService;
 import com.schibsted.spain.friends.service.UserService;
 import com.schibsted.spain.friends.utils.Utils;
+import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
 import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -29,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FriendshipLegacyControllerTest {
 
     @Autowired
+    private MockMvc mockMvc;
+    @Autowired
     UserService userService;
 
     @Autowired
@@ -36,9 +39,6 @@ class FriendshipLegacyControllerTest {
 
     @MockBean
     UserRepository userRepository;
-
-    @Autowired
-    private MockMvc mockMvc;
 
     @Test
     @DisplayName("Friendship request test cases")
@@ -81,7 +81,7 @@ class FriendshipLegacyControllerTest {
     }
 
     @Test
-    @DisplayName("successfull test cases")
+    @DisplayName("successful test cases")
     void friendshipRequestSucessfulTestCases() throws Exception {
         mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
@@ -203,12 +203,14 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("list friends test cases")
     void listFriends() throws Exception {
+        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(InvalidCredentialException.class);
+
         mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
                 .param("username", "johndoe")
                 .header("X-Password", "j12345679"))
                 .andExpect(status().isUnauthorized());
 
-        Mockito.when(userRepository.getUser("samantha")).thenThrow(UnauthorizedException.class);
+        when(userRepository.getUser("samantha")).thenThrow(UnauthorizedException.class);
         mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
                 .param("username", "samantha")
                 .header("X-Password", "x12345678"))

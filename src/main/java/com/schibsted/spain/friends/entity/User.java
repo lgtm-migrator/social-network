@@ -1,6 +1,7 @@
 package com.schibsted.spain.friends.entity;
 
 import com.schibsted.spain.friends.dto.UserDTO;
+import io.swagger.annotations.ApiModel;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ApiModel(value = "User", description = "User model. Used in signup and friend requests")
 public class User implements UserDetails {
     private String username;
     private String password;
@@ -30,17 +32,12 @@ public class User implements UserDetails {
             return false;
         if (obj == this)
             return true;
-        return this.getUsername().equals(((User) obj).getUsername());
+        return this.username.equals(((User) obj).username);
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode(username);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("User: %s, password:%s, friends: %d", username, password, friends.size());
     }
 
     @Override
@@ -77,7 +74,7 @@ public class User implements UserDetails {
         return UserDTO.builder()
                 .username(this.username)
                 .password(this.password)
-                .friends(this.friends.parallelStream().map(User::toDto).collect(Collectors.toList()))
+                .friends(this.friends.stream().map(user -> UserDTO.builder().username(user.getUsername()).build()).collect(Collectors.toList()))
                 .build();
     }
 
