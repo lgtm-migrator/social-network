@@ -43,4 +43,15 @@ class FriendshipRepositoryImplTest {
                 .isThrownBy(() -> friendshipRepository.acceptFriendship(user1, user2));
     }
 
+    @Test
+    void requestFriendship() {
+    }
+
+    @Test
+    void acceptFriendship() {
+    }
+
+    @Test
+    void declineFriendship() {
+    }
 }

@@ -13,7 +13,12 @@ public final class Utils {
     public static final String USERNAME_TO = "usernameTo";
     public static final String X_PASS = "X-Password";
     public static final String USERNAME = "username";
-    public static final String SIGN_UP_URL = "/signup";
+    public static final String SIGN_UP_MAPPING = "/signup";
+    public static final String FRIENDSHIP_MAPPING = "/friendship";
+    public static final String REQUEST = "/request";
+    public static final String ACCEPT = "/accept";
+    public static final String DECLINE = "/decline";
+    public static final String LIST = "/list";
 
     /**
      * utility classes should not be instantiated

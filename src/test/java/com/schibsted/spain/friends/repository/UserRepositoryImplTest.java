@@ -43,4 +43,16 @@ class UserRepositoryImplTest {
         assertThat(testUser2.getFriends().size()).isEqualTo(1);
         assertThat(testUser2.getFriends()).contains(user);
     }
+
+    @Test
+    void getUser() {
+    }
+
+    @Test
+    void findUser() {
+    }
+
+    @Test
+    void updateUser() {
+    }
 }

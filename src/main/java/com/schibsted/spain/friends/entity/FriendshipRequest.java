@@ -1,15 +1,17 @@
 package com.schibsted.spain.friends.entity;
 
 import com.schibsted.spain.friends.dto.FriendshipRequestDTO;
-import io.swagger.annotations.ApiModel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 
 @Data
 @Builder
-@ApiModel(value = "Friend request model", description = "Model used for creating, accepting and declining friend requests")
+@NoArgsConstructor
+@AllArgsConstructor
 public class FriendshipRequest {
 
     private User requesterUser;
@@ -17,15 +19,15 @@ public class FriendshipRequest {
     private FriendRequestStatus status;
 
     public void fromDTO(FriendshipRequestDTO friendshipRequestDTO) {
-        this.requestedUser.fromDTO(friendshipRequestDTO.getRequestedUser());
-        this.requesterUser.fromDTO(friendshipRequestDTO.getRequesterUser());
+        this.requestedUser = User.builder().username(friendshipRequestDTO.getRequestedUser().getUsername()).build();
+        this.requesterUser = User.builder().username(friendshipRequestDTO.getRequesterUser().getUsername()).build();
         this.status = Optional.ofNullable(friendshipRequestDTO.getStatus()).map(FriendRequestStatus::valueOf).orElse(null);
     }
 
     public FriendshipRequestDTO toDTO() {
         return FriendshipRequestDTO.builder()
                 .requesterUser(requesterUser.toDto())
-                .requestedUser(requesterUser.toDto())
+                .requestedUser(requestedUser.toDto())
                 .status(status.name())
                 .build();
     }

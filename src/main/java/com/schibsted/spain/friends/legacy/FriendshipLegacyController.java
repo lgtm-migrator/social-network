@@ -14,7 +14,7 @@ import java.util.List;
 import static com.schibsted.spain.friends.utils.Utils.*;
 
 @RestController
-@RequestMapping("/friendship")
+@RequestMapping(FRIENDSHIP_MAPPING)
 @Api(value = "Friendship", tags = {"Friendship controller"})
 public class FriendshipLegacyController {
 
@@ -24,7 +24,7 @@ public class FriendshipLegacyController {
         this.friendshipService = friendshipService;
     }
 
-    @PostMapping("/request")
+    @PostMapping(REQUEST)
     @ApiOperation(nickname = "request friendship", value = "Request friendship")
     ResponseEntity<FriendshipRequestDTO> requestFriendship(
             @RequestParam(USERNAME_FROM) String usernameFrom,
@@ -33,7 +33,7 @@ public class FriendshipLegacyController {
         return ResponseEntity.ok(friendshipService.requestFriendShip(usernameFrom, usernameTo));
     }
 
-    @PostMapping("/accept")
+    @PostMapping(ACCEPT)
     @ApiOperation(value = "Accept friendship")
     ResponseEntity<FriendshipRequestDTO> acceptFriendship(@RequestParam(USERNAME_FROM) String usernameFrom,
                                                           @RequestParam(USERNAME_TO) String usernameTo,
@@ -41,7 +41,7 @@ public class FriendshipLegacyController {
         return ResponseEntity.ok(friendshipService.acceptFriendShip(usernameFrom, usernameTo));
     }
 
-    @PostMapping("/decline")
+    @PostMapping(DECLINE)
     @ApiOperation(value = "Decline friendship")
     ResponseEntity<FriendshipRequestDTO> declineFriendship(@RequestParam(USERNAME_FROM) String usernameFrom,
                                                            @RequestParam(USERNAME_TO) String usernameTo,
@@ -49,11 +49,10 @@ public class FriendshipLegacyController {
         return ResponseEntity.ok(friendshipService.declineFriendShip(usernameFrom, usernameTo));
     }
 
-    @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = LIST, produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "List user's friends")
     ResponseEntity<List<String>> listFriends(@RequestParam(USERNAME) String username,
                                              @RequestHeader(X_PASS) String password) {
-
         final List<String> friends = friendshipService.listFriends(username);
         return ResponseEntity.ok(friends);
     }

@@ -30,7 +30,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      *
      * @param username username
      * @param password password
-     * @return true if valid, false if invalid
+     * @return returns the signed up user
      */
     @Override
     public UserDTO signup(String username, String password) {
@@ -58,7 +58,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      *
      * @param username  - user
      * @param username2 - user
-     * @return true if Successful operation
+     * @return returns the user updated with the friend added
      */
     @Override
     public UserDTO addFriend(String username, String username2) {
@@ -74,7 +74,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
      *
      * @param username username
      * @param password password
-     * @return true if the user is found, an {@link UnauthorizedException} otherwise
+     * @return returns the user or an {@link UnauthorizedException} otherwise
      */
     @Override
     public UserDTO authenticate(String username, String password) {

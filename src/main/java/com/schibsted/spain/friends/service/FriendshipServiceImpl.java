@@ -33,6 +33,13 @@ public class FriendshipServiceImpl implements FriendshipService {
         this.userService = userService;
     }
 
+    /**
+     * Creates a friendship request an returns a DTO.
+     *
+     * @param requester requester user
+     * @param requested requested user
+     * @return a Data Transfer object of the friendship request
+     */
     @Override
     public FriendshipRequestDTO requestFriendShip(String requester, String requested) {
         if (requester.equals(requested)) {
@@ -53,6 +60,13 @@ public class FriendshipServiceImpl implements FriendshipService {
         }
     }
 
+    /**
+     * Accepts a pending friend request. Calls the {@link UserService#addFriend(String, String)} to update the users
+     *
+     * @param requester Requester user
+     * @param requested requested user
+     * @return a Friendship request DTO
+     */
     @Override
     public FriendshipRequestDTO acceptFriendShip(String requester, String requested) {
         Tuple2<User, User> users = getUsers(requester, requested);
@@ -63,6 +77,13 @@ public class FriendshipServiceImpl implements FriendshipService {
         return acceptFriendship.toDTO();
     }
 
+    /**
+     * Declines a pending friend request
+     *
+     * @param requester requester user
+     * @param requested requested user
+     * @return a friend request DTO
+     */
     @Override
     public FriendshipRequestDTO declineFriendShip(String requester, String requested) {
         Tuple2<User, User> users = getUsers(requester, requested);
@@ -71,6 +92,12 @@ public class FriendshipServiceImpl implements FriendshipService {
         return friendshipRepository.declineFriendship(requesterUser, requestedUser).toDTO();
     }
 
+    /**
+     * Provides a list of friends of the specified user
+     *
+     * @param user user to get friends from
+     * @return a list of friends
+     */
     @Override
     public List<String> listFriends(String user) {
         try {

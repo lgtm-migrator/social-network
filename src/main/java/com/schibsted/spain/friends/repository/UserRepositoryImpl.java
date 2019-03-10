@@ -29,6 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
      */
     public User addUser(String username, String password) {
         final boolean userExists = users.stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(username) && user.getPassword().equalsIgnoreCase(password));
+        // should I encrypt the user's password?
         final User user = User.builder().username(username).password(password).build();
         if (userExists) {
             throw new AlreadyExistsException(ErrorDto.builder()

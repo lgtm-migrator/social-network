@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.schibsted.spain.friends.utils.Utils.*;
 
 @RestController
-@RequestMapping(SIGN_UP_URL)
+@RequestMapping(SIGN_UP_MAPPING)
 @Api(value = "Signup", tags = {"Signup controller"})
 public class SignupLegacyController {
 

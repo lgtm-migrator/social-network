@@ -1,7 +1,6 @@
 package com.schibsted.spain.friends.entity;
 
 import com.schibsted.spain.friends.dto.UserDTO;
-import io.swagger.annotations.ApiModel;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ApiModel(value = "User", description = "User model. Used in signup and friend requests")
 public class User implements UserDetails {
     private String username;
     private String password;
