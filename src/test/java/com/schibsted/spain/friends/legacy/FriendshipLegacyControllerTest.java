@@ -1,10 +1,11 @@
 package com.schibsted.spain.friends.legacy;
 
+import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.service.FriendshipService;
 import com.schibsted.spain.friends.service.UserService;
-import com.schibsted.spain.friends.utils.Utils;
 import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
+import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
 import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.schibsted.spain.friends.utils.Utils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -43,37 +45,60 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Friendship request test cases")
     void friendshipRequestErrorTestCases() throws Exception {
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(InvalidCredentialException.class);
+        mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "samantha")
                 .header("X-Password", "j12345679"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "samantha")
                 .header("X-Password", "j12345678"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+
+    }
+
+    @Test
+    @DisplayName("should be able to do a friend request only once")
+    void FriendRequestTestCase() throws Exception {
+        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("roseanne")).thenReturn(User.builder().username("roseanne").build());
+        when(userRepository.getUser("samantha")).thenThrow(NotFoundException.class);
+        mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "roseanne")
                 .header("X-Password", "j12345678"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "roseanne")
                 .header("X-Password", "j12345678"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+
+    }
+
+    @Test
+    @DisplayName("Should support for creating friend request to different users")
+    void SuccessfulFriendRequests() throws Exception {
+        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
+        when(userRepository.getUser("jessica")).thenReturn(User.builder().username("jessica").password("j12345678").build());
+
+        mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "peter")
                 .header("X-Password", "j12345678"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "jessica")
                 .header("X-Password", "j12345678"))
@@ -82,26 +107,32 @@ class FriendshipLegacyControllerTest {
 
     @Test
     @DisplayName("successful test cases")
-    void friendshipRequestSucessfulTestCases() throws Exception {
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+    void friendshipRequestSuccessfulTestCases() throws Exception {
+        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("roseanne")).thenReturn(User.builder().username("roseanne").password("j12345678").build());
+        when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
+        when(userRepository.getUser("jessica")).thenReturn(User.builder().username("jessica").password("j12345678").build());
+
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + REQUEST)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "roseanne")
                 .header("X-Password", "j12345678"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + REQUEST)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "roseanne")
                 .header("X-Password", "j12345678"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + REQUEST)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "peter")
                 .header("X-Password", "j12345678"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_REQUEST_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + REQUEST)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "jessica")
                 .header("X-Password", "j12345678"))
@@ -112,26 +143,30 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Accept friend requests")
     void acceptFriendshipRequest() throws Exception {
-        friendshipService.requestFriendShip("roseanne", "johndoe");
-        mockMvc.perform(post(Utils.FRIENDSHIP_ACCEPT_URL)
+        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("roseanne").password("r3456789").build());
+        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("roseanne")).thenReturn(User.builder().username("roseanne").password("r3456789").build());
+        when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
+
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + ACCEPT)
                 .param("usernameFrom", "roseanne")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "r3456789"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_ACCEPT_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + ACCEPT)
                 .param("usernameFrom", "roseanne")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "r3456789"))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_ACCEPT_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + ACCEPT)
                 .param("usernameFrom", "roseanne")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "r3456780"))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_ACCEPT_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + ACCEPT)
                 .param("usernameFrom", "roseanne")
                 .param("usernameTo", "peter")
                 .header("X-Password", "r3456789"))
@@ -141,25 +176,25 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Decline friendship request")
     void declineFriendshipRequest() throws Exception {
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "peter")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "p4567890"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "peter")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "p4567890"))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "peter")
                 .param("usernameTo", "jessica")
                 .header("X-Password", "p4567891"))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "peter")
                 .param("usernameTo", "jessica")
                 .header("X-Password", "p4567890"))
@@ -169,31 +204,31 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("other scenarios")
     void friendshipRequest() throws Exception {
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "robert")
                 .header("X-Password", "j12345678"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "robert")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "r0123456"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "robert")
                 .header("X-Password", "j12345678"))
                 .andExpect(status().isBadRequest());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "robert")
                 .param("usernameTo", "johndoe")
                 .header("X-Password", "r0123456"))
                 .andExpect(status().is2xxSuccessful());
 
-        mockMvc.perform(post(Utils.FRIENDSHIP_DECLINE_URL)
+        mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "robert")
                 .header("X-Password", "j12345678"))
@@ -203,15 +238,19 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("list friends test cases")
     void listFriends() throws Exception {
+        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.findUser("johndoe", "j12345679")).thenThrow(InvalidCredentialException.class);
+        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("robert", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("peter", "p4567890")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("samantha")).thenThrow(UnauthorizedException.class);
 
-        mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
+        mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", "johndoe")
                 .header("X-Password", "j12345679"))
                 .andExpect(status().isUnauthorized());
 
-        when(userRepository.getUser("samantha")).thenThrow(UnauthorizedException.class);
-        mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
+        mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", "samantha")
                 .header("X-Password", "x12345678"))
                 .andExpect(status().isBadRequest());
@@ -226,7 +265,7 @@ class FriendshipLegacyControllerTest {
     }
 
     private void testFindFriends(String user, String password, String result) throws Exception {
-        final String response4 = mockMvc.perform(get(Utils.FRIENDSHIP_LIST_URL)
+        final String response4 = mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", user)
                 .header("X-Password", password))
                 .andExpect(status().is2xxSuccessful())
