@@ -36,8 +36,8 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
 
         if (hasNoPendingOrAcceptedRequest) {
             final FriendshipRequest friendshipRequest = FriendshipRequest.builder()
-                    .requestedUser(requestedUser)
-                    .requesterUser(requesterUser)
+                    .userTo(requestedUser)
+                    .userFrom(requesterUser)
                     .status(PENDING)
                     .build();
             friendshipRequests.add(friendshipRequest);
@@ -52,8 +52,8 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
     }
 
     private boolean isRequest(FriendshipRequest request, User sourceUser, User targetUser, FriendRequestStatus status) {
-        return request.getRequestedUser().getUsername().equalsIgnoreCase(sourceUser.getUsername()) &&
-                request.getRequesterUser().getUsername().equalsIgnoreCase(targetUser.getUsername()) &&
+        return request.getUserTo().getUsername().equalsIgnoreCase(sourceUser.getUsername()) &&
+                request.getUserFrom().getUsername().equalsIgnoreCase(targetUser.getUsername()) &&
                 request.getStatus().equals(status);
     }
 

@@ -14,20 +14,20 @@ import java.util.Optional;
 @AllArgsConstructor
 public class FriendshipRequest {
 
-    private User requesterUser;
-    private User requestedUser;
+    private User userFrom;
+    private User userTo;
     private FriendRequestStatus status;
 
     public void fromDTO(FriendshipRequestDTO friendshipRequestDTO) {
-        this.requestedUser = User.builder().username(friendshipRequestDTO.getRequestedUser().getUsername()).build();
-        this.requesterUser = User.builder().username(friendshipRequestDTO.getRequesterUser().getUsername()).build();
+        this.userFrom = User.builder().username(friendshipRequestDTO.getUserFrom().getUsername()).build();
+        this.userTo = User.builder().username(friendshipRequestDTO.getUserTo().getUsername()).build();
         this.status = Optional.ofNullable(friendshipRequestDTO.getStatus()).map(FriendRequestStatus::valueOf).orElse(null);
     }
 
     public FriendshipRequestDTO toDTO() {
         return FriendshipRequestDTO.builder()
-                .requesterUser(requesterUser.toDto())
-                .requestedUser(requestedUser.toDto())
+                .userFrom(userFrom.toDto())
+                .userTo(userTo.toDto())
                 .status(status.name())
                 .build();
     }

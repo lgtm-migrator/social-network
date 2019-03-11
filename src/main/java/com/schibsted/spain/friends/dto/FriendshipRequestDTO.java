@@ -11,8 +11,8 @@ import lombok.Data;
 @ApiModel(value = "Friend request model", description = "Model used for creating, accepting and declining friend requests")
 public class FriendshipRequestDTO {
 
-    private UserDTO requesterUser;
-    private UserDTO requestedUser;
+    private UserDTO userFrom;
+    private UserDTO userTo;
     private String status;
 
 

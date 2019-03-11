@@ -34,20 +34,20 @@ public class FriendshipServiceImpl implements FriendshipService {
     /**
      * Creates a friendship request an returns a DTO.
      *
-     * @param requester requester user
-     * @param requested requested user
+     * @param from requesting user
+     * @param to   requested user
      * @return a Data Transfer object of the friendship request
      */
     @Override
-    public FriendshipRequestDTO requestFriendShip(String requester, String requested) {
-        if (requester.equals(requested)) {
+    public FriendshipRequestDTO requestFriendShip(String from, String to) {
+        if (from.equals(to)) {
             throw new BusinessException(
-                    String.format("The user %s cannot make a friend request to himself", requester));
+                    String.format("The user %s cannot make a friend request to himself", from));
         } else {
             try {
-                User requesterUser = userRepository.getUser(requester);
-                User requestedUser = userRepository.getUser(requested);
-                return friendshipRepository.requestFriendship(requesterUser, requestedUser).toDTO();
+                User userFrom = userRepository.getUser(from);
+                User userto = userRepository.getUser(to);
+                return friendshipRepository.requestFriendship(userFrom, userto).toDTO();
             } catch (Exception e) {
                 throw new NotFoundException(ErrorDto.builder()
                         .message("User not found")
@@ -60,31 +60,31 @@ public class FriendshipServiceImpl implements FriendshipService {
     /**
      * Accepts a pending friend request. Calls the {@link UserService#addFriend(String, String)} to update the users
      *
-     * @param requester Requester user
-     * @param requested requested user
+     * @param from Requester user
+     * @param to   requested user
      * @return a Friendship request DTO
      */
     @Override
-    public FriendshipRequestDTO acceptFriendShip(String requester, String requested) {
-        User requesterUser = userRepository.getUser(requester);
-        User requestedUser = userRepository.getUser(requested);
-        final FriendshipRequest acceptFriendship = friendshipRepository.acceptFriendship(requesterUser, requestedUser);
-        userService.addFriend(requester, requested);
+    public FriendshipRequestDTO acceptFriendShip(String from, String to) {
+        User userFrom = userRepository.getUser(from);
+        User userTo = userRepository.getUser(to);
+        final FriendshipRequest acceptFriendship = friendshipRepository.acceptFriendship(userFrom, userTo);
+        userService.addFriend(from, to);
         return acceptFriendship.toDTO();
     }
 
     /**
      * Declines a pending friend request
      *
-     * @param requester requester user
-     * @param requested requested user
+     * @param from requesting user
+     * @param to   requested user
      * @return a friend request DTO
      */
     @Override
-    public FriendshipRequestDTO declineFriendShip(String requester, String requested) {
-        User requesterUser = userRepository.getUser(requester);
-        User requestedUser = userRepository.getUser(requested);
-        return friendshipRepository.declineFriendship(requesterUser, requestedUser).toDTO();
+    public FriendshipRequestDTO declineFriendShip(String from, String to) {
+        User userFrom = userRepository.getUser(from);
+        User userTo = userRepository.getUser(to);
+        return friendshipRepository.declineFriendship(userFrom, userTo).toDTO();
     }
 
     /**

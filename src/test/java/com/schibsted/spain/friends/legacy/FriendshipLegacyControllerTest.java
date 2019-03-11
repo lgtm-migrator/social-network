@@ -159,8 +159,8 @@ class FriendshipLegacyControllerTest {
         when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
         when(friendshipRepository.acceptFriendship(roseanne, johnDoe))
                 .thenReturn(FriendshipRequest.builder()
-                        .requesterUser(roseanne)
-                        .requestedUser(johnDoe)
+                        .userFrom(roseanne)
+                        .userTo(johnDoe)
                         .status(ACCEPTED)
                         .build())
                 .thenThrow(AlreadyExistsException.class);

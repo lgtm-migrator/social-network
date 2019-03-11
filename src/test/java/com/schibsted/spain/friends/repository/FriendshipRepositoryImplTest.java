@@ -35,8 +35,8 @@ class FriendshipRepositoryImplTest {
         friendshipRepository.requestFriendship(user1, user3);
         assertThat(friendshipRepository.acceptFriendship(user1, user2))
                 .isEqualTo(FriendshipRequest.builder()
-                        .requestedUser(user2)
-                        .requesterUser(user1)
+                        .userTo(user2)
+                        .userFrom(user1)
                         .status(ACCEPTED)
                         .build());
         assertThatExceptionOfType(AlreadyExistsException.class)

@@ -16,14 +16,14 @@ class FriendshipRequestTest {
         User requested = User.builder().username("requested").build();
 
         FriendshipRequest friendshipRequest = FriendshipRequest.builder()
-                .requesterUser(requester)
-                .requestedUser(requested)
+                .userFrom(requester)
+                .userTo(requested)
                 .status(FriendRequestStatus.ACCEPTED)
                 .build();
 
         FriendshipRequestDTO friendshipRequestDTO = friendshipRequest.toDTO();
-        assertThat(friendshipRequestDTO.getRequestedUser().getUsername()).isEqualTo("requested");
-        assertThat(friendshipRequestDTO.getRequesterUser().getUsername()).isEqualTo("requester");
+        assertThat(friendshipRequestDTO.getUserTo().getUsername()).isEqualTo("requested");
+        assertThat(friendshipRequestDTO.getUserFrom().getUsername()).isEqualTo("requester");
         assertThat(friendshipRequestDTO.getStatus()).isEqualTo("ACCEPTED");
     }
 
@@ -32,15 +32,15 @@ class FriendshipRequestTest {
         UserDTO requester = UserDTO.builder().username("requester").build();
         UserDTO requested = UserDTO.builder().username("requested").build();
         FriendshipRequestDTO friendshipRequestDTO = FriendshipRequestDTO.builder()
-                .requestedUser(requested)
-                .requesterUser(requester)
+                .userTo(requested)
+                .userFrom(requester)
                 .status("PENDING").build();
 
         FriendshipRequest friendshipRequest = new FriendshipRequest();
         friendshipRequest.fromDTO(friendshipRequestDTO);
 
-        assertThat(friendshipRequest.getRequestedUser().getUsername()).isEqualTo("requested");
-        assertThat(friendshipRequest.getRequesterUser().getUsername()).isEqualTo("requester");
+        assertThat(friendshipRequest.getUserTo().getUsername()).isEqualTo("requested");
+        assertThat(friendshipRequest.getUserFrom().getUsername()).isEqualTo("requester");
         assertThat(friendshipRequest.getStatus()).isEqualByComparingTo(FriendRequestStatus.PENDING);
     }
 }

@@ -8,11 +8,11 @@ import java.util.List;
 @Service
 public interface FriendshipService {
 
-    FriendshipRequestDTO requestFriendShip(String requester, String requested);
+    FriendshipRequestDTO requestFriendShip(String from, String to);
 
-    FriendshipRequestDTO acceptFriendShip(String requester, String requested);
+    FriendshipRequestDTO acceptFriendShip(String from, String to);
 
-    FriendshipRequestDTO declineFriendShip(String requester, String requested);
+    FriendshipRequestDTO declineFriendShip(String from, String to);
 
     List<String> listFriends(String user);
 }
