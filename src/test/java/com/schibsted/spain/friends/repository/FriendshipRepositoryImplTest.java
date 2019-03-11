@@ -1,5 +1,6 @@
 package com.schibsted.spain.friends.repository;
 
+import com.schibsted.spain.friends.entity.FriendRequestStatus;
 import com.schibsted.spain.friends.entity.FriendshipRequest;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static com.schibsted.spain.friends.entity.FriendRequestStatus.ACCEPTED;
+import static com.schibsted.spain.friends.entity.FriendRequestStatus.PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -45,16 +47,35 @@ class FriendshipRepositoryImplTest {
 
     @Test
     void requestFriendship() {
+        assertThat(friendshipRepository.requestFriendship(user1, user2))
+                .isEqualTo(FriendshipRequest.builder()
+                        .userFrom(user1)
+                        .userTo(user2)
+                        .status(PENDING)
+                        .build());
+
     }
 
     @Test
     void acceptFriendship() {
+        friendshipRepository.requestFriendship(user1, user2);
+
+        assertThat(friendshipRepository.acceptFriendship(user1, user2))
+                .isEqualTo(FriendshipRequest.builder()
+                        .userFrom(user1)
+                        .userTo(user2)
+                        .status(ACCEPTED)
+                        .build());
     }
 
     @Test
     void declineFriendship() {
-        User userOne = User.builder().username("userOne").build();
-        User userTwo = User.builder().username("userTwo").build();
-        assertThat(friendshipRepository.declineFriendship(userOne, userTwo)).isNotNull();
+        friendshipRepository.requestFriendship(user1, user2);
+
+        assertThat(friendshipRepository.declineFriendship(user1, user2)).isEqualTo(FriendshipRequest.builder()
+                .userFrom(user1)
+                .userTo(user2)
+                .status(FriendRequestStatus.DECLINED)
+                .build());
     }
 }
