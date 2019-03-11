@@ -3,6 +3,7 @@ package com.schibsted.spain.friends.legacy;
 import com.schibsted.spain.friends.repository.FriendshipRepository;
 import com.schibsted.spain.friends.service.FriendshipService;
 import com.schibsted.spain.friends.service.UserService;
+import com.schibsted.spain.friends.utils.Utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,28 +39,28 @@ class SignupLegacyControllerTest {
     @DisplayName("Signup with invalid data")
     void signupErrorTestCases() throws Exception {
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "john_doe")
-                .header("X-Password", "j12345678"))
+                .param(Utils.USERNAME, "john_doe")
+                .header(Utils.X_PASS, "j12345678"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "johndoe")
-                .header("X-Password", "j12-45678"))
+                .param(Utils.USERNAME, "johndoe")
+                .header(Utils.X_PASS, "j12-45678"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "johndoe")
-                .header("X-Password", "j1234"))
+                .param(Utils.USERNAME, "johndoe")
+                .header(Utils.X_PASS, "j1234"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "johndoe")
-                .header("X-Password", "j1234567890123"))
+                .param(Utils.USERNAME, "johndoe")
+                .header(Utils.X_PASS, "j1234567890123"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "johnisaniceguy")
-                .header("X-Password", "j12345678"))
+                .param(Utils.USERNAME, "johnisaniceguy")
+                .header(Utils.X_PASS, "j12345678"))
                 .andExpect(status().isBadRequest());
 
     }
@@ -68,33 +69,33 @@ class SignupLegacyControllerTest {
     @DisplayName("Signup with valid data")
     void signupWithValidData() throws Exception {
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "johndoe")
-                .header("X-Password", "j12345678"))
+                .param(Utils.USERNAME, "johndoe")
+                .header(Utils.X_PASS, "j12345678"))
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "johndoe")
-                .header("X-Password", "j12345678"))
+                .param(Utils.USERNAME, "johndoe")
+                .header(Utils.X_PASS, "j12345678"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "roseanne")
-                .header("X-Password", "r3456789"))
+                .param(Utils.USERNAME, "roseanne")
+                .header(Utils.X_PASS, "r3456789"))
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "peter")
-                .header("X-Password", "p4567890"))
+                .param(Utils.USERNAME, "peter")
+                .header(Utils.X_PASS, "p4567890"))
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "jessica")
-                .header("X-Password", "j5678901"))
+                .param(Utils.USERNAME, "jessica")
+                .header(Utils.X_PASS, "j5678901"))
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param("username", "robert")
-                .header("X-Password", "r0123456"))
+                .param(Utils.USERNAME, "robert")
+                .header(Utils.X_PASS, "r0123456"))
                 .andExpect(status().is2xxSuccessful());
     }
 }
