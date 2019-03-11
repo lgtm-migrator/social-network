@@ -53,5 +53,8 @@ class FriendshipRepositoryImplTest {
 
     @Test
     void declineFriendship() {
+        User userOne = User.builder().username("userOne").build();
+        User userTwo = User.builder().username("userTwo").build();
+        assertThat(friendshipRepository.declineFriendship(userOne, userTwo)).isNotNull();
     }
 }
