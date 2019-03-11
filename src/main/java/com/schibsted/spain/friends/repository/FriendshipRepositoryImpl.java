@@ -51,9 +51,9 @@ public class FriendshipRepositoryImpl implements FriendshipRepository {
         }
     }
 
-    private boolean isRequest(FriendshipRequest request, User userFrom, User userTo, FriendRequestStatus status) {
-        return request.getRequestedUser().getUsername().equalsIgnoreCase(userFrom.getUsername()) &&
-                request.getRequesterUser().getUsername().equalsIgnoreCase(userTo.getUsername()) &&
+    private boolean isRequest(FriendshipRequest request, User sourceUser, User targetUser, FriendRequestStatus status) {
+        return request.getRequestedUser().getUsername().equalsIgnoreCase(sourceUser.getUsername()) &&
+                request.getRequesterUser().getUsername().equalsIgnoreCase(targetUser.getUsername()) &&
                 request.getStatus().equals(status);
     }
 
