@@ -13,15 +13,15 @@
 * johndoe --> robert
 
 ## Accepted friend requests
-roseanne --> johndoe
-robert --> johndoe
+* roseanne --> johndoe
+* robert --> johndoe
 
 ## Declined friend requests
-peter --> johndoe
-robert --> johndoe
+* peter --> johndoe
+* robert --> johndoe
 
 ## Actual friends
-johndoe --> roseanne, robert
-roseanne --> johndoe
-robert --> johndoe
-peter --> []
+* johndoe --> roseanne, robert
+* roseanne --> johndoe
+* robert --> johndoe
+* peter --> []

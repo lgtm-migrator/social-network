@@ -261,20 +261,31 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("list friends test cases")
     void listFriends() throws Exception {
-        //when(userService.authenticate(Mockito.anyString(), Mockito.anyString())).thenReturn(UserDTO.builder().username("user").password("password").build());
+        final User roseanne = User.builder().username("roseanne").build();
+        final User robert = User.builder().username("robert").build();
+        final User johndoe = User.builder().username("johndoe").build();
+
         when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.findUser("johndoe", "j12345679")).thenThrow(new InvalidCredentialException("Invalid credentials for John Doe"));
         when(userRepository.findUser("samantha", "x12345678")).thenThrow(new InvalidCredentialException("Samantha doesn't exists"));
-//        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-//        when(userRepository.findUser("robert", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-//        when(userRepository.findUser("peter", "p4567890")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("robert", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("peter", "p4567890")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.getUser("samantha")).thenThrow(new NotFoundException("Anyul"));
+
         when(userRepository.getUser("johndoe"))
                 .thenReturn(User.builder().username("johndoe")
-                        .friend(User.builder().username("roseanne").build())
-                        .friend(User.builder().username("robert").build())
+                        .friend(roseanne)
+                        .friend(robert)
                         .build());
-        //when(userRepository.findUser(Mockito.anyString(), Mockito.anyString())).thenReturn(User.builder().username("user").password("pass").build());
+
+        when(userRepository.getUser("roseanne"))
+                .thenReturn(User.builder().username("roseanne").friend(johndoe).build());
+
+        when(userRepository.getUser("robert"))
+                .thenReturn(User.builder().username("robert").friend(johndoe).build());
+
+        when(userRepository.getUser("peter")).thenReturn(johndoe);
 
         mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", "johndoe")
