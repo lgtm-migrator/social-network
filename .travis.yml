@@ -11,10 +11,11 @@ cache:
     - $HOME/.gradle/wrapper/
 addons:
   sonarcloud:
-    organization: "anyulled-github"
+    organization: "myowncompany"
     token: $SONAR_TOKEN
 
 script:
+  - sonar-scanner
   - ./gradlew cobertura
   - ./gradlew sonarqube
 after_success:
