@@ -52,7 +52,10 @@ public class UserRepositoryImpl implements UserRepository {
         return users.stream()
                 .filter(user -> user.getUsername().equals(username))
                 .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(ErrorDto.builder()
+                        .exceptionClass(this.getClass().getSimpleName())
+                        .message(String.format("User %s not found", username))
+                        .build()));
     }
 
     /**
@@ -70,7 +73,10 @@ public class UserRepositoryImpl implements UserRepository {
         return users.stream()
                 .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
                 .findFirst()
-                .orElseThrow(InvalidCredentialException::new);
+                .orElseThrow(() -> new InvalidCredentialException(ErrorDto.builder()
+                        .exceptionClass(this.getClass().getSimpleName())
+                        .message(String.format("Invalid credential for  user %s", username))
+                        .build()));
     }
 
     /**
@@ -108,7 +114,7 @@ public class UserRepositoryImpl implements UserRepository {
     /**
      * Creates a new set from an existing set and a new element
      *
-     * @param source   the source with the set of friends
+     * @param source the source with the set of friends
      * @param target the new element to be added
      * @return a new set with both elements
      */

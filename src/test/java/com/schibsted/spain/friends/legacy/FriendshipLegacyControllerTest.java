@@ -5,11 +5,12 @@ import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.FriendshipRepository;
 import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.service.FriendshipService;
+import com.schibsted.spain.friends.service.FriendshipServiceImpl;
 import com.schibsted.spain.friends.service.UserService;
 import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
 import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
-import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,18 +37,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FriendshipLegacyControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
-    @Autowired
     UserService userService;
-
     @Autowired
     FriendshipService friendshipService;
-
     @MockBean
     UserRepository userRepository;
-
     @MockBean
     FriendshipRepository friendshipRepository;
+    @Autowired
+    private MockMvc mockMvc;
+
+    @BeforeEach
+    void setup() {
+        friendshipService = new FriendshipServiceImpl(userRepository, friendshipRepository, userService);
+    }
+
 
     @Test
     @DisplayName("Friendship request test cases")
@@ -257,12 +261,20 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("list friends test cases")
     void listFriends() throws Exception {
+        //when(userService.authenticate(Mockito.anyString(), Mockito.anyString())).thenReturn(UserDTO.builder().username("user").password("password").build());
         when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(InvalidCredentialException.class);
-        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("robert", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("peter", "p4567890")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("samantha")).thenThrow(UnauthorizedException.class);
+        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(new InvalidCredentialException("Invalid credentials for John Doe"));
+        when(userRepository.findUser("samantha", "x12345678")).thenThrow(new InvalidCredentialException("Samantha doesn't exists"));
+//        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+//        when(userRepository.findUser("robert", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+//        when(userRepository.findUser("peter", "p4567890")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("samantha")).thenThrow(new NotFoundException("Anyul"));
+        when(userRepository.getUser("johndoe"))
+                .thenReturn(User.builder().username("johndoe")
+                        .friend(User.builder().username("roseanne").build())
+                        .friend(User.builder().username("robert").build())
+                        .build());
+        //when(userRepository.findUser(Mockito.anyString(), Mockito.anyString())).thenReturn(User.builder().username("user").password("pass").build());
 
         mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", "johndoe")
@@ -272,7 +284,7 @@ class FriendshipLegacyControllerTest {
         mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", "samantha")
                 .header("X-Password", "x12345678"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
 
         testFindFriends("johndoe", "j12345678", "[\"roseanne\",\"robert\"]");
 
@@ -288,7 +300,7 @@ class FriendshipLegacyControllerTest {
                 .param("username", user)
                 .header("X-Password", password))
                 .andExpect(status().is2xxSuccessful())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andReturn().getResponse().getContentAsString();
         assertThat(response4).isEqualTo(result);
     }
