@@ -71,7 +71,7 @@ class FriendshipLegacyControllerTest {
 
     @Test
     @DisplayName("should be able to do a friend request only once")
-    void FriendRequestTestCase() throws Exception {
+    void friendRequestTestCase() throws Exception {
         when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.getUser("roseanne")).thenReturn(User.builder().username("roseanne").build());
@@ -93,7 +93,7 @@ class FriendshipLegacyControllerTest {
 
     @Test
     @DisplayName("Should support for creating friend request to different users")
-    void SuccessfulFriendRequests() throws Exception {
+    void successfulFriendRequests() throws Exception {
         when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
