@@ -47,17 +47,26 @@ class FriendshipLegacyControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    private final User roseanne = User.builder().username("roseanne").password("r3456789").build();
+    private final User robert = User.builder().username("robert").build();
+    private final User johndoe = User.builder().username("johndoe").password("j12345678").build();
+    private final User peter = User.builder().username("peter").password("p4567890").build();
+
     @BeforeEach
     void setup() {
         friendshipService = new FriendshipServiceImpl(userRepository, friendshipRepository, userService);
+        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(new InvalidCredentialException("Invalid credentials for John Doe"));
+        when(userRepository.findUser("samantha", "x12345678")).thenThrow(new InvalidCredentialException("Samantha doesn't exists"));
+        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(roseanne);
+        when(userRepository.findUser("robert", "r3456789")).thenReturn(johndoe);
+        when(userRepository.findUser("peter", "p4567890")).thenReturn(peter);
     }
 
 
     @Test
     @DisplayName("Friendship request test cases")
     void friendshipRequestErrorTestCases() throws Exception {
-        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(InvalidCredentialException.class);
         mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "samantha")
@@ -261,18 +270,7 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("list friends test cases")
     void listFriends() throws Exception {
-        final User roseanne = User.builder().username("roseanne").build();
-        final User robert = User.builder().username("robert").build();
-        final User johndoe = User.builder().username("johndoe").build();
-
-        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("johndoe", "j12345679")).thenThrow(new InvalidCredentialException("Invalid credentials for John Doe"));
-        when(userRepository.findUser("samantha", "x12345678")).thenThrow(new InvalidCredentialException("Samantha doesn't exists"));
-        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("robert", "r3456789")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.findUser("peter", "p4567890")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("samantha")).thenThrow(new NotFoundException("Anyul"));
-
+        when(userRepository.getUser("samantha")).thenThrow(new NotFoundException("Samantha doesn't exists"));
         when(userRepository.getUser("johndoe"))
                 .thenReturn(User.builder().username("johndoe")
                         .friend(roseanne)
@@ -285,7 +283,7 @@ class FriendshipLegacyControllerTest {
         when(userRepository.getUser("robert"))
                 .thenReturn(User.builder().username("robert").friend(johndoe).build());
 
-        when(userRepository.getUser("peter")).thenReturn(johndoe);
+        when(userRepository.getUser("peter")).thenReturn(peter);
 
         mockMvc.perform(get(FRIENDSHIP_MAPPING + LIST)
                 .param("username", "johndoe")
