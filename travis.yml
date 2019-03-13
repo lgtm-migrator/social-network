@@ -1,0 +1,23 @@
+language: java
+sudo: false
+before_install:
+  - chmod +x gradlew
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+addons:
+  sonarcloud:
+    organization: "anyulled-github"
+    token: $SONAR_TOKEN
+
+script:
+  - ./gradlew cobertura
+  - ./gradlew sonarqube
+after_success:
+  - ./gradlew cobertura coveralls
+  - ./gradlew jacocoTestReport coveralls
+  - bash <(curl -s https://codecov.io/bash)
