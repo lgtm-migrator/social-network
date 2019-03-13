@@ -9,6 +9,8 @@ import com.schibsted.spain.friends.repository.UserRepository;
 import com.schibsted.spain.friends.utils.exceptions.BusinessException;
 import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
+import com.schibsted.spain.friends.utils.exceptions.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class FriendshipServiceImpl implements FriendshipService {
 
     private final UserRepository userRepository;
@@ -49,7 +52,8 @@ public class FriendshipServiceImpl implements FriendshipService {
                 User userto = userRepository.getUser(to);
                 return friendshipRepository.requestFriendship(userFrom, userto).toDTO();
             } catch (Exception e) {
-                throw new NotFoundException(ErrorDto.builder()
+                log.error("Exception found {}", e.getMessage());
+                throw new ValidationException(ErrorDto.builder()
                         .message("User not found")
                         .exceptionClass(this.getClass().getSimpleName())
                         .build());
