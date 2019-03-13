@@ -46,13 +46,24 @@ class UserRepositoryImplTest {
 
     @Test
     void getUser() {
+        userRepository.addUser("peter", "12345678");
+        assertThat(userRepository.getUser("peter"))
+                .isEqualTo(User.builder().username("peter").password("12345678").build());
     }
 
     @Test
     void findUser() {
+        userRepository.addUser("james", "12345678");
+        assertThat(userRepository.findUser("james", "12345678"))
+                .isEqualTo(User.builder().username("james").password("12345678").build());
     }
 
     @Test
     void updateUser() {
+        User james = User.builder().username("james").password("12345678").build();
+        User john = User.builder().username("john").password("12345678").build();
+        userRepository.addUser("james", "12345678");
+        userRepository.addFriend(james, john);
+        assertThat(userRepository.updateUser(james)).isEqualTo(james.toBuilder().friend(john).build());
     }
 }

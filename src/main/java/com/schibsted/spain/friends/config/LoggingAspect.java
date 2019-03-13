@@ -7,6 +7,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
+
 @Aspect
 @Slf4j
 @Component
@@ -24,7 +26,7 @@ public class LoggingAspect {
 
     @Before("execution(* com.schibsted.spain.friends.service.*.*(..))")
     public void logBeforeAllServiceMethods(JoinPoint joinPoint) {
-        log.info("== Service invoked : {} ==", joinPoint.getSignature().getName());
+        log.info("== Service method {} invoked with params {} ==", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
     }
 
     @After("execution(* com.schibsted.spain.friends.service.*.*(..))")
@@ -32,12 +34,12 @@ public class LoggingAspect {
         log.info("==  Service finished : {} ==", joinPoint.getSignature().getName());
     }
 
-    @Before("execution(* com.schibsted.spain.friends.legacy.*.*(..))")
-    public void logBeforeAllRepositoryrMethods(JoinPoint joinPoint) {
-        log.info("== Repository invoked : {} ==", joinPoint.getSignature().getName());
+    @Before("execution(* com.schibsted.spain.friends.repository.*.*(..))")
+    public void logBeforeAllRepositoryMethods(JoinPoint joinPoint) {
+        log.info("== Repository method {} invoked with params {}==", joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
     }
 
-    @After("execution(* com.schibsted.spain.friends.legacy.*.*(..))")
+    @After("execution(* com.schibsted.spain.friends.repository.*.*(..))")
     public void logAfterAllRepositoryMethods(JoinPoint joinPoint) {
         log.info("== Repository finished : {} ==", joinPoint.getSignature().getName());
     }

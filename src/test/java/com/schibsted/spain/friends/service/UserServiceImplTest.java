@@ -6,6 +6,7 @@ import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
 import com.schibsted.spain.friends.utils.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -47,6 +48,8 @@ class UserServiceImplTest {
     @Test
     void retrieveUser() {
         UserDTO testOne = userService.signup("testOne", "j12345678");
-        assertThat(userService.retrieveUser("testOne", new UsernamePasswordAuthenticationToken("testOne", "j12345678"))).isNotNull();
+        final UserDetails userDetails = userService.retrieveUser("testOne", new UsernamePasswordAuthenticationToken("testOne", "j12345678"));
+        assertThat(userDetails.getUsername()).isEqualTo(testOne.getUsername());
+        assertThat(userDetails.getPassword()).isEqualTo(testOne.getPassword());
     }
 }
