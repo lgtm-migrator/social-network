@@ -22,8 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.schibsted.spain.friends.entity.FriendRequestStatus.ACCEPTED;
-import static com.schibsted.spain.friends.entity.FriendRequestStatus.PENDING;
+import static com.schibsted.spain.friends.entity.FriendRequestStatus.*;
 import static com.schibsted.spain.friends.utils.Utils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -59,10 +58,16 @@ class FriendshipLegacyControllerTest {
         friendshipService = new FriendshipServiceImpl(userRepository, friendshipRepository, userService);
         when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
         when(userRepository.findUser("johndoe", "j12345679")).thenThrow(new InvalidCredentialException("Invalid credentials for John Doe"));
+
         when(userRepository.findUser("samantha", "x12345678")).thenThrow(new InvalidCredentialException("Samantha doesn't exists"));
+
         when(userRepository.findUser("roseanne", "r3456789")).thenReturn(roseanne);
+        when(userRepository.findUser("roseanne", "r3456780")).thenThrow(new InvalidCredentialException("Invalid credentials for Roseanne"));
+
         when(userRepository.findUser("robert", "r3456789")).thenReturn(johndoe);
+
         when(userRepository.findUser("peter", "p4567890")).thenReturn(peter);
+        when(userRepository.findUser("peter", "p4567891")).thenThrow(new InvalidCredentialException("Invalid credentials for Peter"));
     }
 
 
@@ -206,8 +211,6 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Accept friend requests")
     void acceptFriendshipRequest() throws Exception {
-
-        when(userRepository.findUser("roseanne", "r3456780")).thenThrow(new InvalidCredentialException("Invalid credentials for Roseanne"));
         when(userRepository.getUser("johndoe")).thenReturn(johndoe);
         when(userRepository.getUser("roseanne")).thenReturn(roseanne);
         when(userRepository.getUser("peter")).thenReturn(peter);
@@ -249,6 +252,19 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Decline friendship request")
     void declineFriendshipRequest() throws Exception {
+        when(userRepository.getUser("johndoe")).thenReturn(johndoe);
+        when(userRepository.getUser("peter")).thenReturn(peter);
+        when(friendshipRepository.declineFriendship(peter, johndoe))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(peter)
+                        .userTo(johndoe)
+                        .status(DECLINED)
+                        .build())
+                .thenThrow(new AlreadyExistsException("A pending friend request already exists"));
+
+        when(friendshipRepository.declineFriendship(peter, jessica))
+                .thenThrow(new NotFoundException("A pending friend request already exists"));
+
         mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "peter")
                 .param("usernameTo", "johndoe")
@@ -265,7 +281,7 @@ class FriendshipLegacyControllerTest {
                 .param("usernameFrom", "peter")
                 .param("usernameTo", "jessica")
                 .header("X-Password", "p4567891"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
 
         mockMvc.perform(post(FRIENDSHIP_MAPPING + DECLINE)
                 .param("usernameFrom", "peter")
