@@ -16,6 +16,8 @@ addons:
 
 script:
   - sonar-scanner
+  - ./gradlew check
+  - ./gradlew codeCoverageReport
 after_success:
   - ./gradlew cobertura coveralls
   - ./gradlew jacocoTestReport coveralls
