@@ -23,6 +23,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.schibsted.spain.friends.entity.FriendRequestStatus.ACCEPTED;
+import static com.schibsted.spain.friends.entity.FriendRequestStatus.PENDING;
 import static com.schibsted.spain.friends.utils.Utils.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -51,6 +52,7 @@ class FriendshipLegacyControllerTest {
     private final User robert = User.builder().username("robert").build();
     private final User johndoe = User.builder().username("johndoe").password("j12345678").build();
     private final User peter = User.builder().username("peter").password("p4567890").build();
+    private final User jessica = User.builder().username("jessica").password("j12345678").build();
 
     @BeforeEach
     void setup() {
@@ -65,7 +67,7 @@ class FriendshipLegacyControllerTest {
 
 
     @Test
-    @DisplayName("Friendship request test cases")
+    @DisplayName("should reject friend requests from invalid credentials or non-existing users")
     void friendshipRequestErrorTestCases() throws Exception {
         mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
@@ -85,10 +87,17 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("should be able to do a friend request only once")
     void friendRequestTestCase() throws Exception {
-        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("roseanne")).thenReturn(User.builder().username("roseanne").build());
-        when(userRepository.getUser("samantha")).thenThrow(NotFoundException.class);
+        when(userRepository.getUser("johndoe")).thenReturn(johndoe);
+        when(userRepository.getUser("roseanne")).thenReturn(roseanne);
+        when(userRepository.getUser("samantha")).thenThrow(new NotFoundException("Samantha doesn't exists"));
+        when(friendshipRepository.requestFriendship(johndoe, roseanne))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(johndoe)
+                        .userTo(roseanne)
+                        .status(PENDING)
+                        .build())
+                .thenThrow(new AlreadyExistsException("Friend request already exists"));
+
         mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
                 .param("usernameTo", "roseanne")
@@ -107,10 +116,22 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Should support for creating friend request to different users")
     void successfulFriendRequests() throws Exception {
-        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
-        when(userRepository.getUser("jessica")).thenReturn(User.builder().username("jessica").password("j12345678").build());
+        when(userRepository.getUser("johndoe")).thenReturn(johndoe);
+        when(userRepository.getUser("peter")).thenReturn(peter);
+        when(userRepository.getUser("jessica")).thenReturn(jessica);
+
+        when(friendshipRepository.requestFriendship(johndoe, peter))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(johndoe)
+                        .userTo(peter)
+                        .status(PENDING)
+                        .build());
+        when(friendshipRepository.requestFriendship(johndoe, jessica))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(johndoe)
+                        .userTo(peter)
+                        .status(PENDING)
+                        .build());
 
         mockMvc.perform(post(FRIENDSHIP_REQUEST_URL)
                 .param("usernameFrom", "johndoe")
@@ -128,11 +149,33 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("successful test cases")
     void friendshipRequestSuccessfulTestCases() throws Exception {
-        when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("johndoe")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
-        when(userRepository.getUser("roseanne")).thenReturn(User.builder().username("roseanne").password("j12345678").build());
-        when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
-        when(userRepository.getUser("jessica")).thenReturn(User.builder().username("jessica").password("j12345678").build());
+        //when(userRepository.findUser("johndoe", "j12345678")).thenReturn(User.builder().username("johndoe").password("j12345678").build());
+        when(userRepository.getUser("johndoe")).thenReturn(johndoe);
+        when(userRepository.getUser("roseanne")).thenReturn(roseanne);
+        when(userRepository.getUser("peter")).thenReturn(peter);
+        when(userRepository.getUser("jessica")).thenReturn(jessica);
+
+        when(friendshipRepository.requestFriendship(johndoe, roseanne))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(johndoe)
+                        .userTo(roseanne)
+                        .status(PENDING)
+                        .build())
+                .thenThrow(new AlreadyExistsException("Friend request already exists"));
+
+        when(friendshipRepository.requestFriendship(johndoe, peter))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(johndoe)
+                        .userTo(peter)
+                        .status(PENDING)
+                        .build());
+
+        when(friendshipRepository.requestFriendship(johndoe, jessica))
+                .thenReturn(FriendshipRequest.builder()
+                        .userFrom(johndoe)
+                        .userTo(jessica)
+                        .status(PENDING)
+                        .build());
 
         mockMvc.perform(post(FRIENDSHIP_MAPPING + REQUEST)
                 .param("usernameFrom", "johndoe")
@@ -163,22 +206,20 @@ class FriendshipLegacyControllerTest {
     @Test
     @DisplayName("Accept friend requests")
     void acceptFriendshipRequest() throws Exception {
-        User johnDoe = User.builder().username("johndoe").password("j12345678").build();
-        User roseanne = User.builder().username("roseanne").password("r3456789").friend(johnDoe).build();
-        when(userRepository.findUser("roseanne", "r3456789")).thenReturn(roseanne);
-        when(userRepository.findUser("roseanne", "r3456780")).thenThrow(InvalidCredentialException.class);
-        when(userRepository.getUser("johndoe")).thenReturn(johnDoe);
+
+        when(userRepository.findUser("roseanne", "r3456780")).thenThrow(new InvalidCredentialException("Invalid credentials for Roseanne"));
+        when(userRepository.getUser("johndoe")).thenReturn(johndoe);
         when(userRepository.getUser("roseanne")).thenReturn(roseanne);
-        when(userRepository.getUser("peter")).thenReturn(User.builder().username("peter").password("j12345678").build());
-        when(friendshipRepository.acceptFriendship(roseanne, johnDoe))
+        when(userRepository.getUser("peter")).thenReturn(peter);
+        when(friendshipRepository.acceptFriendship(roseanne, johndoe))
                 .thenReturn(FriendshipRequest.builder()
                         .userFrom(roseanne)
-                        .userTo(johnDoe)
+                        .userTo(johndoe)
                         .status(ACCEPTED)
                         .build())
-                .thenThrow(AlreadyExistsException.class);
+                .thenThrow(new AlreadyExistsException("A pending friend request already exists"));
 
-        when(userRepository.addFriend(roseanne, johnDoe)).thenReturn(roseanne);
+        when(userRepository.addFriend(roseanne, johndoe)).thenReturn(roseanne);
 
         mockMvc.perform(post(FRIENDSHIP_MAPPING + ACCEPT)
                 .param("usernameFrom", "roseanne")
