@@ -15,10 +15,10 @@ addons:
     token: $SONAR_TOKEN
 
 script:
-  - sonar-scanner
   - ./gradlew check
   - ./gradlew jacocoTestReport
   - ./gradlew jacocoTestCoverageVerification
+  - sonar-scanner
 after_success:
   - ./gradlew cobertura coveralls
   - ./gradlew jacocoTestReport coveralls

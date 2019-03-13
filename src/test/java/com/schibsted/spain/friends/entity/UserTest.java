@@ -51,4 +51,19 @@ class UserTest {
         assertThat(firstFriend).isNotNull();
         assertThat(firstFriend.getUsername()).isEqualTo(roseanne.getUsername());
     }
+
+    @Test
+    void equals() {
+        User user = User.builder().username("usertest").password("123456").build();
+        User user2 = User.builder().username("usertest").password("dasdsd").build();
+        assertThat(user.equals(user2)).isTrue();
+    }
+
+    @Test
+    void hashcode() {
+        User user = User.builder().username("test").build();
+        User user2 = User.builder().username("test").build();
+        assertThat(user.hashCode()).isNotNull();
+        assertThat(user2.hashCode()).isEqualTo(user.hashCode());
+    }
 }
