@@ -60,7 +60,7 @@ class UserTest {
     }
 
     @Test
-    void hashcode() {
+    void hashVerification() {
         User user = User.builder().username("test").build();
         User user2 = User.builder().username("test").build();
         assertThat(user.hashCode()).isNotNull();
