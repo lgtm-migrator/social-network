@@ -12,7 +12,7 @@ import static org.springframework.util.DigestUtils.md5DigestAsHex;
 @DisplayName("User repository tests")
 class UserRepositoryImplTest {
 
-    private static final String PASSWORD = "12345678";
+    private static final String PASS = "12345678";
     private UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
     @Test
@@ -26,8 +26,8 @@ class UserRepositoryImplTest {
     @Test
     @DisplayName("Should not allow to insert duplicated users")
     void addFriendTwice() {
-        userRepository.addUser("12345", PASSWORD);
-        assertThatExceptionOfType(AlreadyExistsException.class).isThrownBy(() -> userRepository.addUser("12345", PASSWORD));
+        userRepository.addUser("12345", PASS);
+        assertThatExceptionOfType(AlreadyExistsException.class).isThrownBy(() -> userRepository.addUser("12345", PASS));
         assertThat(userRepository.getUsers()).isNotNull();
         assertThat(userRepository.getUsers().size()).isEqualTo(1);
     }
@@ -36,7 +36,7 @@ class UserRepositoryImplTest {
     void addFriend() {
         User friend = User.builder().username("test2").build();
         User friend2 = User.builder().username("test3").build();
-        User user = User.builder().username("test").password(PASSWORD).friend(friend2).build();
+        User user = User.builder().username("test").password(PASS).friend(friend2).build();
         userRepository.addFriend(user, friend);
         final User testUser1 = userRepository.getUser("test");
         final User testUser2 = userRepository.getUser("test2");
@@ -48,24 +48,24 @@ class UserRepositoryImplTest {
 
     @Test
     void getUser() {
-        userRepository.addUser("peter", PASSWORD);
+        userRepository.addUser("peter", PASS);
         assertThat(userRepository.getUser("peter"))
-                .isEqualTo(User.builder().username("peter").password(PASSWORD).build());
+                .isEqualTo(User.builder().username("peter").password(PASS).build());
     }
 
     @Test
     void findUser() {
-        userRepository.addUser("james", PASSWORD);
+        userRepository.addUser("james", PASS);
 
-        assertThat(userRepository.findUser("james", PASSWORD))
-                .isEqualTo(User.builder().username("james").password(md5DigestAsHex(PASSWORD.getBytes())).build());
+        assertThat(userRepository.findUser("james", PASS))
+                .isEqualTo(User.builder().username("james").password(md5DigestAsHex(PASS.getBytes())).build());
     }
 
     @Test
     void updateUser() {
-        User james = User.builder().username("james").password(PASSWORD).build();
-        User john = User.builder().username("john").password(PASSWORD).build();
-        userRepository.addUser("james", PASSWORD);
+        User james = User.builder().username("james").password(PASS).build();
+        User john = User.builder().username("john").password(PASS).build();
+        userRepository.addUser("james", PASS);
         userRepository.addFriend(james, john);
         assertThat(userRepository.updateUser(james)).isEqualTo(james.toBuilder().friend(john).build());
     }

@@ -15,8 +15,8 @@ import static org.springframework.util.DigestUtils.md5DigestAsHex;
 
 class UserServiceImplTest {
 
-    private static final String PASSWORD = "12345678";
-    private static final String PASSWORD1 = "j12345678";
+    private static final String PASS = "12345678";
+    private static final String PASS1 = "j12345678";
     private static final String TEST_ONE = "testOne";
     private static final String TEST_TWO = "testTwo";
     private UserRepositoryImpl userRepository = new UserRepositoryImpl();
@@ -25,18 +25,18 @@ class UserServiceImplTest {
 
     @Test
     void signup() {
-        assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup(null, PASSWORD));
+        assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup(null, PASS));
         assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup(TEST_ONE, null));
         assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup("test", "12346578"));
         assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup(TEST_TWO, "1234657891234"));
-        assertThat(userService.signup("username", PASSWORD1))
-                .isEqualTo(UserDTO.builder().username("username").password(md5DigestAsHex(PASSWORD1.getBytes())).build());
+        assertThat(userService.signup("username", PASS1))
+                .isEqualTo(UserDTO.builder().username("username").password(md5DigestAsHex(PASS1.getBytes())).build());
     }
 
     @Test
     void addFriend() {
-        UserDTO testOne = userService.signup(TEST_ONE, PASSWORD);
-        UserDTO testTwo = userService.signup(TEST_TWO, PASSWORD);
+        UserDTO testOne = userService.signup(TEST_ONE, PASS);
+        UserDTO testTwo = userService.signup(TEST_TWO, PASS);
         assertThat(userService.addFriend(TEST_ONE, TEST_TWO))
                 .isEqualTo(UserDTO.builder().username(testOne.getUsername()).password(testOne.getPassword())
                         .friend(UserDTO.builder().username(testTwo.getUsername()).build()).build());
@@ -45,15 +45,15 @@ class UserServiceImplTest {
 
     @Test
     void authenticate() {
-        UserDTO testOne = userService.signup(TEST_ONE, PASSWORD1);
-        assertThat(userService.authenticate(TEST_ONE, PASSWORD1)).isEqualTo(UserDTO.builder().username(testOne.getUsername()).password(testOne.getPassword()).build());
-        assertThatExceptionOfType(InvalidCredentialException.class).isThrownBy(() -> userService.authenticate(TEST_TWO, PASSWORD));
+        UserDTO testOne = userService.signup(TEST_ONE, PASS1);
+        assertThat(userService.authenticate(TEST_ONE, PASS1)).isEqualTo(UserDTO.builder().username(testOne.getUsername()).password(testOne.getPassword()).build());
+        assertThatExceptionOfType(InvalidCredentialException.class).isThrownBy(() -> userService.authenticate(TEST_TWO, PASS));
     }
 
     @Test
     void retrieveUser() {
-        UserDTO testOne = userService.signup(TEST_ONE, PASSWORD1);
-        final UserDetails userDetails = userService.retrieveUser(TEST_ONE, new UsernamePasswordAuthenticationToken(TEST_ONE, PASSWORD1));
+        UserDTO testOne = userService.signup(TEST_ONE, PASS1);
+        final UserDetails userDetails = userService.retrieveUser(TEST_ONE, new UsernamePasswordAuthenticationToken(TEST_ONE, PASS1));
         assertThat(userDetails.getUsername()).isEqualTo(testOne.getUsername());
         assertThat(userDetails.getPassword()).isEqualTo(testOne.getPassword());
     }
