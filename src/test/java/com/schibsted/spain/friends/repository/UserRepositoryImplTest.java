@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
 
 @DisplayName("User repository tests")
 class UserRepositoryImplTest {
@@ -54,8 +55,9 @@ class UserRepositoryImplTest {
     @Test
     void findUser() {
         userRepository.addUser("james", "12345678");
+
         assertThat(userRepository.findUser("james", "12345678"))
-                .isEqualTo(User.builder().username("james").password("12345678").build());
+                .isEqualTo(User.builder().username("james").password(md5DigestAsHex("12345678".getBytes())).build());
     }
 
     @Test

@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
 
 
 class UserServiceImplTest {
@@ -25,7 +26,7 @@ class UserServiceImplTest {
         assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup("test", "12346578"));
         assertThatExceptionOfType(ValidationException.class).isThrownBy(() -> userService.signup("testTwo", "1234657891234"));
         assertThat(userService.signup("username", "j12345678"))
-                .isEqualTo(UserDTO.builder().username("username").password("j12345678").build());
+                .isEqualTo(UserDTO.builder().username("username").password(md5DigestAsHex("j12345678".getBytes())).build());
     }
 
     @Test

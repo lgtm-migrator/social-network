@@ -14,6 +14,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.util.DigestUtils.md5DigestAsHex;
+
 @Repository
 @Slf4j
 public class UserRepositoryImpl implements UserRepository {
@@ -28,9 +30,9 @@ public class UserRepositoryImpl implements UserRepository {
      * @return creates a user and adds it to the users list repository
      */
     public User addUser(String username, String password) {
-        final boolean userExists = users.stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(username) && user.getPassword().equalsIgnoreCase(password));
-        // should I encrypt the user's password?
-        final User user = User.builder().username(username).password(password).build();
+        final boolean userExists = users.stream().anyMatch(user -> user.getUsername().equalsIgnoreCase(username) &&
+                user.getPassword().equalsIgnoreCase(md5DigestAsHex(password.getBytes())));
+        final User user = User.builder().username(username).password(md5DigestAsHex(password.getBytes())).build();
         if (userExists) {
             throw new AlreadyExistsException(ErrorDto.builder()
                     .message(String.format("User %s already exists", username))
@@ -71,7 +73,7 @@ public class UserRepositoryImpl implements UserRepository {
             log.debug("Users: {}", users);
         }
         return users.stream()
-                .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(password))
+                .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(md5DigestAsHex(password.getBytes())))
                 .findFirst()
                 .orElseThrow(() -> new InvalidCredentialException(ErrorDto.builder()
                         .exceptionClass(this.getClass().getSimpleName())
