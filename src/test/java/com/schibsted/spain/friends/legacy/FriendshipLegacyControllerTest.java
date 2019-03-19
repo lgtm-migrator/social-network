@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class FriendshipLegacyControllerTest {
 
-    private static final String JOHN_DOE_STR = "john_doe";
+    private static final String JOHN_DOE_STR = "johnDoe";
     private static final String JOHN_PASS = "j12345678";
     private static final String ROSEANNE_STR = "roseanne";
     private static final String SAMANTHA_STR = "samantha";
@@ -61,7 +61,7 @@ class FriendshipLegacyControllerTest {
 
     private final User roseanne = User.builder().username(ROSEANNE_STR).password(ROSS_PASS).build();
     private final User robert = User.builder().username(ROBERT_STR).build();
-    private final User john_doe = User.builder().username(JOHN_DOE_STR).password(JOHN_PASS).build();
+    private final User johnDoe = User.builder().username(JOHN_DOE_STR).password(JOHN_PASS).build();
     private final User peter = User.builder().username(PETER_STR).password(PETER_PASS).build();
     private final User jessica = User.builder().username(JESSICA_STR).password(JOHN_PASS).build();
 
@@ -81,7 +81,7 @@ class FriendshipLegacyControllerTest {
         when(userRepository.findUser(PETER_STR, PETER_PASS)).thenReturn(peter);
         when(userRepository.findUser(PETER_STR, "p4567891")).thenThrow(new InvalidCredentialException("Invalid credentials for Peter"));
 
-        when(userRepository.getUser(JOHN_DOE_STR)).thenReturn(john_doe);
+        when(userRepository.getUser(JOHN_DOE_STR)).thenReturn(johnDoe);
         when(userRepository.getUser(ROSEANNE_STR)).thenReturn(roseanne);
 
     }
@@ -106,9 +106,9 @@ class FriendshipLegacyControllerTest {
     @DisplayName("should be able to do a friend request only once")
     void friendRequestTestCase() throws Exception {
         when(userRepository.getUser(SAMANTHA_STR)).thenThrow(new NotFoundException("Samantha doesn't exists"));
-        when(friendshipRepository.requestFriendship(john_doe, roseanne))
+        when(friendshipRepository.requestFriendship(johnDoe, roseanne))
                 .thenReturn(FriendshipRequest.builder()
-                        .userFrom(john_doe)
+                        .userFrom(johnDoe)
                         .userTo(roseanne)
                         .status(PENDING)
                         .build())
@@ -133,15 +133,15 @@ class FriendshipLegacyControllerTest {
         when(userRepository.getUser(PETER_STR)).thenReturn(peter);
         when(userRepository.getUser(JESSICA_STR)).thenReturn(jessica);
 
-        when(friendshipRepository.requestFriendship(john_doe, peter))
+        when(friendshipRepository.requestFriendship(johnDoe, peter))
                 .thenReturn(FriendshipRequest.builder()
-                        .userFrom(john_doe)
+                        .userFrom(johnDoe)
                         .userTo(peter)
                         .status(PENDING)
                         .build());
-        when(friendshipRepository.requestFriendship(john_doe, jessica))
+        when(friendshipRepository.requestFriendship(johnDoe, jessica))
                 .thenReturn(FriendshipRequest.builder()
-                        .userFrom(john_doe)
+                        .userFrom(johnDoe)
                         .userTo(peter)
                         .status(PENDING)
                         .build());
@@ -165,24 +165,24 @@ class FriendshipLegacyControllerTest {
         when(userRepository.getUser(PETER_STR)).thenReturn(peter);
         when(userRepository.getUser(JESSICA_STR)).thenReturn(jessica);
 
-        when(friendshipRepository.requestFriendship(john_doe, roseanne))
+        when(friendshipRepository.requestFriendship(johnDoe, roseanne))
                 .thenReturn(FriendshipRequest.builder()
-                        .userFrom(john_doe)
+                        .userFrom(johnDoe)
                         .userTo(roseanne)
                         .status(PENDING)
                         .build())
                 .thenThrow(new AlreadyExistsException("Friend request already exists"));
 
-        when(friendshipRepository.requestFriendship(john_doe, peter))
+        when(friendshipRepository.requestFriendship(johnDoe, peter))
                 .thenReturn(FriendshipRequest.builder()
-                        .userFrom(john_doe)
+                        .userFrom(johnDoe)
                         .userTo(peter)
                         .status(PENDING)
                         .build());
 
-        when(friendshipRepository.requestFriendship(john_doe, jessica))
+        when(friendshipRepository.requestFriendship(johnDoe, jessica))
                 .thenReturn(FriendshipRequest.builder()
-                        .userFrom(john_doe)
+                        .userFrom(johnDoe)
                         .userTo(jessica)
                         .status(PENDING)
                         .build());
@@ -217,15 +217,15 @@ class FriendshipLegacyControllerTest {
     @DisplayName("should be able to Accept friend requests")
     void acceptFriendshipRequest() throws Exception {
         when(userRepository.getUser(PETER_STR)).thenReturn(peter);
-        when(friendshipRepository.acceptFriendship(roseanne, john_doe))
+        when(friendshipRepository.acceptFriendship(roseanne, johnDoe))
                 .thenReturn(FriendshipRequest.builder()
                         .userFrom(roseanne)
-                        .userTo(john_doe)
+                        .userTo(johnDoe)
                         .status(ACCEPTED)
                         .build())
                 .thenThrow(new AlreadyExistsException("A pending friend request already exists"));
 
-        when(userRepository.addFriend(roseanne, john_doe)).thenReturn(roseanne);
+        when(userRepository.addFriend(roseanne, johnDoe)).thenReturn(roseanne);
 
         mockMvc.perform(post(FRIENDSHIP_MAPPING + ACCEPT)
                 .param(USERNAME_FROM, ROSEANNE_STR)
@@ -256,10 +256,10 @@ class FriendshipLegacyControllerTest {
     @DisplayName("should be able to Decline friendship request")
     void declineFriendshipRequest() throws Exception {
         when(userRepository.getUser(PETER_STR)).thenReturn(peter);
-        when(friendshipRepository.declineFriendship(peter, john_doe))
+        when(friendshipRepository.declineFriendship(peter, johnDoe))
                 .thenReturn(FriendshipRequest.builder()
                         .userFrom(peter)
-                        .userTo(john_doe)
+                        .userTo(johnDoe)
                         .status(DECLINED)
                         .build())
                 .thenThrow(new AlreadyExistsException("A pending friend request already exists"));
@@ -298,32 +298,32 @@ class FriendshipLegacyControllerTest {
         when(userRepository.getUser(ROBERT_STR)).thenReturn(robert);
 
         final FriendshipRequest pendingFriendRequest = FriendshipRequest.builder()
-                .userFrom(john_doe)
+                .userFrom(johnDoe)
                 .userTo(robert)
                 .status(PENDING)
                 .build();
-        when(friendshipRepository.requestFriendship(john_doe, robert))
+        when(friendshipRepository.requestFriendship(johnDoe, robert))
                 .thenReturn(pendingFriendRequest)
                 .thenReturn(pendingFriendRequest)
                 .thenThrow(new AlreadyExistsException("An accepted friend request already exists"));
 
-        when(userRepository.addFriend(robert, john_doe))
+        when(userRepository.addFriend(robert, johnDoe))
                 .thenReturn(User.builder()
                         .username(ROBERT_STR)
-                        .friend(john_doe)
+                        .friend(johnDoe)
                         .build());
 
-        when(friendshipRepository.declineFriendship(robert, john_doe))
+        when(friendshipRepository.declineFriendship(robert, johnDoe))
                 .thenReturn(FriendshipRequest.builder()
                         .userFrom(robert)
-                        .userTo(john_doe)
+                        .userTo(johnDoe)
                         .status(DECLINED)
                         .build());
 
-        when(friendshipRepository.acceptFriendship(robert, john_doe))
+        when(friendshipRepository.acceptFriendship(robert, johnDoe))
                 .thenReturn(FriendshipRequest.builder()
                         .userFrom(robert)
-                        .userTo(john_doe)
+                        .userTo(johnDoe)
                         .status(ACCEPTED)
                         .build());
 
@@ -371,10 +371,10 @@ class FriendshipLegacyControllerTest {
                         .build());
 
         when(userRepository.getUser(ROSEANNE_STR))
-                .thenReturn(User.builder().username(ROSEANNE_STR).friend(john_doe).build());
+                .thenReturn(User.builder().username(ROSEANNE_STR).friend(johnDoe).build());
 
         when(userRepository.getUser(ROBERT_STR))
-                .thenReturn(User.builder().username(ROBERT_STR).friend(john_doe).build());
+                .thenReturn(User.builder().username(ROBERT_STR).friend(johnDoe).build());
 
         when(userRepository.getUser(PETER_STR)).thenReturn(peter);
 
@@ -390,9 +390,9 @@ class FriendshipLegacyControllerTest {
 
         testFindFriends(JOHN_DOE_STR, JOHN_PASS, "[\"roseanne\",\"robert\"]");
 
-        testFindFriends(ROSEANNE_STR, ROSS_PASS, "[\"john_doe\"]");
+        testFindFriends(ROSEANNE_STR, ROSS_PASS, "[\"johnDoe\"]");
 
-        testFindFriends(ROBERT_STR, ROB_PASS, "[\"john_doe\"]");
+        testFindFriends(ROBERT_STR, ROB_PASS, "[\"johnDoe\"]");
 
         testFindFriends(PETER_STR, PETER_PASS, "[]");
     }

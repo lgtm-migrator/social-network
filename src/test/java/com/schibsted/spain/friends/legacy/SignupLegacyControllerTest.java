@@ -23,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class SignupLegacyControllerTest {
 
-    private static final String JOHNDOE = "johndoe";
+    private static final String JOHN_DOE = "johndoe";
     private static final String JOHN_PASS = "j12345678";
     @Autowired
     private MockMvc mockMvc;
@@ -46,17 +46,17 @@ class SignupLegacyControllerTest {
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, JOHNDOE)
+                .param(Utils.USERNAME, JOHN_DOE)
                 .header(Utils.X_PASS, "j12-45678"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, JOHNDOE)
+                .param(Utils.USERNAME, JOHN_DOE)
                 .header(Utils.X_PASS, "j1234"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, JOHNDOE)
+                .param(Utils.USERNAME, JOHN_DOE)
                 .header(Utils.X_PASS, "j1234567890123"))
                 .andExpect(status().isBadRequest());
 
@@ -71,12 +71,12 @@ class SignupLegacyControllerTest {
     @DisplayName("Signup with valid data")
     void signupWithValidData() throws Exception {
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, JOHNDOE)
+                .param(Utils.USERNAME, JOHN_DOE)
                 .header(Utils.X_PASS, JOHN_PASS))
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, JOHNDOE)
+                .param(Utils.USERNAME, JOHN_DOE)
                 .header(Utils.X_PASS, JOHN_PASS))
                 .andExpect(status().isBadRequest());
 
