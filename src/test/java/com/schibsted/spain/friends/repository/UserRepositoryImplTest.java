@@ -14,6 +14,7 @@ class UserRepositoryImplTest {
 
     private static final String PASS = "12345678";
     private static final String JAMES = "JAMES";
+    public static final String PETER = "peter";
     private UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
     @Test
@@ -49,9 +50,9 @@ class UserRepositoryImplTest {
 
     @Test
     void getUser() {
-        userRepository.addUser("peter", PASS);
-        assertThat(userRepository.getUser("peter"))
-                .isEqualTo(User.builder().username("peter").password(PASS).build());
+        userRepository.addUser(PETER, PASS);
+        assertThat(userRepository.getUser(PETER))
+                .isEqualTo(User.builder().username(PETER).password(PASS).build());
     }
 
     @Test

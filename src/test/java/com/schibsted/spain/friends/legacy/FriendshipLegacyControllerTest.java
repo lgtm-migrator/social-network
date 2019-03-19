@@ -47,6 +47,9 @@ class FriendshipLegacyControllerTest {
     private static final String ROSS_PASS = "r3456789";
     private static final String PETER_PASS = "p4567890";
     private static final String ROB_PASS = "r0123456";
+    private static final String A_PENDING_FRIEND_REQUEST_ALREADY_EXISTS = "A pending friend request already exists";
+    private static final String SAMANTHA_DOESN_T_EXISTS = "Samantha doesn't exists";
+    private static final String INVALID_CREDENTIALS = "Invalid credentials for";
 
     @Autowired
     UserService userService;
@@ -69,17 +72,17 @@ class FriendshipLegacyControllerTest {
     void setup() {
         friendshipService = new FriendshipServiceImpl(userRepository, friendshipRepository, userService);
         when(userRepository.findUser(JOHN_DOE_STR, JOHN_PASS)).thenReturn(User.builder().username(JOHN_DOE_STR).password(JOHN_PASS).build());
-        when(userRepository.findUser(JOHN_DOE_STR, "j12345679")).thenThrow(new InvalidCredentialException("Invalid credentials for John Doe"));
+        when(userRepository.findUser(JOHN_DOE_STR, "j12345679")).thenThrow(new InvalidCredentialException(INVALID_CREDENTIALS + JOHN_DOE_STR));
 
-        when(userRepository.findUser(SAMANTHA_STR, "x12345678")).thenThrow(new InvalidCredentialException("Samantha doesn't exists"));
+        when(userRepository.findUser(SAMANTHA_STR, "x12345678")).thenThrow(new InvalidCredentialException(SAMANTHA_DOESN_T_EXISTS));
 
         when(userRepository.findUser(ROSEANNE_STR, ROSS_PASS)).thenReturn(roseanne);
-        when(userRepository.findUser(ROSEANNE_STR, "r3456780")).thenThrow(new InvalidCredentialException("Invalid credentials for Roseanne"));
+        when(userRepository.findUser(ROSEANNE_STR, "r3456780")).thenThrow(new InvalidCredentialException(INVALID_CREDENTIALS + ROSEANNE_STR));
 
         when(userRepository.findUser(ROBERT_STR, ROB_PASS)).thenReturn(robert);
 
         when(userRepository.findUser(PETER_STR, PETER_PASS)).thenReturn(peter);
-        when(userRepository.findUser(PETER_STR, "p4567891")).thenThrow(new InvalidCredentialException("Invalid credentials for Peter"));
+        when(userRepository.findUser(PETER_STR, "p4567891")).thenThrow(new InvalidCredentialException(INVALID_CREDENTIALS + PETER_STR));
 
         when(userRepository.getUser(JOHN_DOE_STR)).thenReturn(johnDoe);
         when(userRepository.getUser(ROSEANNE_STR)).thenReturn(roseanne);
@@ -223,7 +226,7 @@ class FriendshipLegacyControllerTest {
                         .userTo(johnDoe)
                         .status(ACCEPTED)
                         .build())
-                .thenThrow(new AlreadyExistsException("A pending friend request already exists"));
+                .thenThrow(new AlreadyExistsException(A_PENDING_FRIEND_REQUEST_ALREADY_EXISTS));
 
         when(userRepository.addFriend(roseanne, johnDoe)).thenReturn(roseanne);
 
