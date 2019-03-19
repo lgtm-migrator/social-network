@@ -4,10 +4,7 @@ import com.google.common.base.Preconditions;
 import com.schibsted.spain.friends.dto.UserDTO;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.UserRepository;
-import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
-import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
-import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
-import com.schibsted.spain.friends.utils.exceptions.ValidationException;
+import com.schibsted.spain.friends.utils.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -81,7 +78,7 @@ public class UserServiceImpl extends AbstractUserDetailsAuthenticationProvider i
         User user;
         try {
             user = userRepository.findUser(username, password);
-        } catch (NotFoundException e) {
+        } catch (InvalidCredentialException e) {
             log.error("user {} not found", username);
             throw new UnauthorizedException(ErrorDto.builder()
                     .message(e.getMessage())

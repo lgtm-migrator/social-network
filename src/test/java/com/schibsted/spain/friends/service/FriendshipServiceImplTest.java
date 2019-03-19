@@ -7,6 +7,7 @@ import com.schibsted.spain.friends.entity.FriendshipRequest;
 import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.repository.FriendshipRepositoryImpl;
 import com.schibsted.spain.friends.repository.UserRepositoryImpl;
+import com.schibsted.spain.friends.utils.exceptions.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,8 +16,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -51,6 +55,12 @@ class FriendshipServiceImplTest {
                 return samantha;
             } else return null;
         });
+    }
+
+    @Test
+    @MockitoSettings(strictness = Strictness.LENIENT)
+    public void selfRequest() {
+        assertThatExceptionOfType(BusinessException.class).isThrownBy(() -> friendshipService.requestFriendShip("selfUser", "selfUser"));
     }
 
     @Test
