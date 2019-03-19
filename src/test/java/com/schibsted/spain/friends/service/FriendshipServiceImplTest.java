@@ -24,6 +24,8 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnitPlatform.class)
 class FriendshipServiceImplTest {
 
+    private static final String JOHN_DOE = "johndoe";
+    private static final String SAMANTHA = "samantha";
     @Mock
     private UserRepositoryImpl userRepository;
 
@@ -36,16 +38,16 @@ class FriendshipServiceImplTest {
     @InjectMocks
     private FriendshipServiceImpl friendshipService;
 
-    private User johndoe = User.builder().username("johndoe").build();
-    private User samantha = User.builder().username("samantha").build();
+    private User johndoe = User.builder().username(JOHN_DOE).build();
+    private User samantha = User.builder().username(SAMANTHA).build();
 
     @BeforeEach
     void setup() {
         friendshipService = new FriendshipServiceImpl(userRepository, friendshipRepository, userService);
         when(userRepository.getUser(anyString())).thenAnswer(invocation -> {
-            if ("johndoe".equals(invocation.getArgument(0))) {
+            if (JOHN_DOE.equals(invocation.getArgument(0))) {
                 return johndoe;
-            } else if ("samantha".equals(invocation.getArgument(0))) {
+            } else if (SAMANTHA.equals(invocation.getArgument(0))) {
                 return samantha;
             } else return null;
         });
@@ -54,13 +56,13 @@ class FriendshipServiceImplTest {
     @Test
     public void listFriends() {
 
-        when(userRepository.getUser("samantha"))
-                .thenReturn(User.builder().username("samantha")
+        when(userRepository.getUser(SAMANTHA))
+                .thenReturn(User.builder().username(SAMANTHA)
                         .friend(User.builder().username("peter").build())
                         .friend(User.builder().username("james").build())
                         .build());
 
-        assertThat(friendshipService.listFriends("samantha")).contains("peter", "james");
+        assertThat(friendshipService.listFriends(SAMANTHA)).contains("peter", "james");
     }
 
     @Test
@@ -74,10 +76,10 @@ class FriendshipServiceImplTest {
                         .status(FriendRequestStatus.PENDING)
                         .build());
 
-        assertThat(friendshipService.requestFriendShip("johndoe", "samantha"))
+        assertThat(friendshipService.requestFriendShip(JOHN_DOE, SAMANTHA))
                 .isEqualTo(FriendshipRequestDTO.builder()
-                        .userFrom(UserDTO.builder().username("johndoe").build())
-                        .userTo(UserDTO.builder().username("samantha").build())
+                        .userFrom(UserDTO.builder().username(JOHN_DOE).build())
+                        .userTo(UserDTO.builder().username(SAMANTHA).build())
                         .status(FriendRequestStatus.PENDING.name())
                         .build());
     }
@@ -91,10 +93,10 @@ class FriendshipServiceImplTest {
                         .status(FriendRequestStatus.ACCEPTED)
                         .build());
 
-        assertThat(friendshipService.acceptFriendShip("johndoe", "samantha"))
+        assertThat(friendshipService.acceptFriendShip(JOHN_DOE, SAMANTHA))
                 .isEqualTo(FriendshipRequestDTO.builder()
-                        .userFrom(UserDTO.builder().username("johndoe").build())
-                        .userTo(UserDTO.builder().username("samantha").build())
+                        .userFrom(UserDTO.builder().username(JOHN_DOE).build())
+                        .userTo(UserDTO.builder().username(SAMANTHA).build())
                         .status(FriendRequestStatus.ACCEPTED.name())
                         .build());
     }
@@ -109,10 +111,10 @@ class FriendshipServiceImplTest {
                         .status(FriendRequestStatus.DECLINED)
                         .build());
 
-        assertThat(friendshipService.declineFriendShip("johndoe", "samantha"))
+        assertThat(friendshipService.declineFriendShip(JOHN_DOE, SAMANTHA))
                 .isEqualTo(FriendshipRequestDTO.builder()
-                        .userFrom(UserDTO.builder().username("johndoe").build())
-                        .userTo(UserDTO.builder().username("samantha").build())
+                        .userFrom(UserDTO.builder().username(JOHN_DOE).build())
+                        .userTo(UserDTO.builder().username(SAMANTHA).build())
                         .status(FriendRequestStatus.DECLINED.name())
                         .build());
     }
