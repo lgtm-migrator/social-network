@@ -13,6 +13,7 @@ import static org.springframework.util.DigestUtils.md5DigestAsHex;
 class UserRepositoryImplTest {
 
     private static final String PASS = "12345678";
+    private static final String JAMES = "JAMES";
     private UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
     @Test
@@ -55,17 +56,17 @@ class UserRepositoryImplTest {
 
     @Test
     void findUser() {
-        userRepository.addUser("james", PASS);
+        userRepository.addUser(JAMES, PASS);
 
-        assertThat(userRepository.findUser("james", PASS))
-                .isEqualTo(User.builder().username("james").password(md5DigestAsHex(PASS.getBytes())).build());
+        assertThat(userRepository.findUser(JAMES, PASS))
+                .isEqualTo(User.builder().username(JAMES).password(md5DigestAsHex(PASS.getBytes())).build());
     }
 
     @Test
     void updateUser() {
-        User james = User.builder().username("james").password(PASS).build();
+        User james = User.builder().username(JAMES).password(PASS).build();
         User john = User.builder().username("john").password(PASS).build();
-        userRepository.addUser("james", PASS);
+        userRepository.addUser(JAMES, PASS);
         userRepository.addFriend(james, john);
         assertThat(userRepository.updateUser(james)).isEqualTo(james.toBuilder().friend(john).build());
     }
