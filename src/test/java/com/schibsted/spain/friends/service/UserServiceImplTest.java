@@ -3,6 +3,7 @@ package com.schibsted.spain.friends.service;
 import com.schibsted.spain.friends.dto.UserDTO;
 import com.schibsted.spain.friends.repository.UserRepositoryImpl;
 import com.schibsted.spain.friends.utils.exceptions.InvalidCredentialException;
+import com.schibsted.spain.friends.utils.exceptions.UnauthorizedException;
 import com.schibsted.spain.friends.utils.exceptions.ValidationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -47,7 +48,7 @@ class UserServiceImplTest {
     void authenticate() {
         UserDTO testOne = userService.signup(TEST_ONE, PASS1);
         assertThat(userService.authenticate(TEST_ONE, PASS1)).isEqualTo(UserDTO.builder().username(testOne.getUsername()).password(testOne.getPassword()).build());
-        assertThatExceptionOfType(InvalidCredentialException.class).isThrownBy(() -> userService.authenticate(TEST_TWO, PASS));
+        assertThatExceptionOfType(UnauthorizedException.class).isThrownBy(() -> userService.authenticate(TEST_TWO, PASS));
     }
 
     @Test
