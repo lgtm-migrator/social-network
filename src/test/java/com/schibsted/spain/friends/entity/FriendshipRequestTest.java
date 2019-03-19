@@ -9,11 +9,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FriendshipRequestTest {
 
+    private static final String REQUESTER = "requester";
+    private static final String REQUESTED = "requested";
+
     @Test
     @DisplayName("from DTO conversion")
     void toDTO() {
-        User requester = User.builder().username("requester").build();
-        User requested = User.builder().username("requested").build();
+        User requester = User.builder().username(REQUESTER).build();
+        User requested = User.builder().username(REQUESTED).build();
 
         FriendshipRequest friendshipRequest = FriendshipRequest.builder()
                 .userFrom(requester)
@@ -22,25 +25,25 @@ class FriendshipRequestTest {
                 .build();
 
         FriendshipRequestDTO friendshipRequestDTO = friendshipRequest.toDTO();
-        assertThat(friendshipRequestDTO.getUserTo().getUsername()).isEqualTo("requested");
-        assertThat(friendshipRequestDTO.getUserFrom().getUsername()).isEqualTo("requester");
-        assertThat(friendshipRequestDTO.getStatus()).isEqualTo("ACCEPTED");
+        assertThat(friendshipRequestDTO.getUserTo().getUsername()).isEqualTo(REQUESTED);
+        assertThat(friendshipRequestDTO.getUserFrom().getUsername()).isEqualTo(REQUESTER);
+        assertThat(friendshipRequestDTO.getStatus()).isEqualTo(FriendRequestStatus.ACCEPTED.name());
     }
 
     @Test
     void fromDTO() {
-        UserDTO requester = UserDTO.builder().username("requester").build();
-        UserDTO requested = UserDTO.builder().username("requested").build();
+        UserDTO requester = UserDTO.builder().username(REQUESTER).build();
+        UserDTO requested = UserDTO.builder().username(REQUESTED).build();
         FriendshipRequestDTO friendshipRequestDTO = FriendshipRequestDTO.builder()
                 .userTo(requested)
                 .userFrom(requester)
-                .status("PENDING").build();
+                .status(FriendRequestStatus.PENDING.name()).build();
 
         FriendshipRequest friendshipRequest = new FriendshipRequest();
         friendshipRequest.fromDTO(friendshipRequestDTO);
 
-        assertThat(friendshipRequest.getUserTo().getUsername()).isEqualTo("requested");
-        assertThat(friendshipRequest.getUserFrom().getUsername()).isEqualTo("requester");
+        assertThat(friendshipRequest.getUserTo().getUsername()).isEqualTo(REQUESTED);
+        assertThat(friendshipRequest.getUserFrom().getUsername()).isEqualTo(REQUESTER);
         assertThat(friendshipRequest.getStatus()).isEqualByComparingTo(FriendRequestStatus.PENDING);
     }
 }

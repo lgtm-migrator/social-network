@@ -23,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class SignupLegacyControllerTest {
 
+    private static final String JOHNDOE = "johndoe";
+    private static final String PASSWORD = "j12345678";
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,27 +42,27 @@ class SignupLegacyControllerTest {
     void signupErrorTestCases() throws Exception {
         mockMvc.perform(post(SIGN_UP_MAPPING)
                 .param(Utils.USERNAME, "john_doe")
-                .header(Utils.X_PASS, "j12345678"))
+                .header(Utils.X_PASS, PASSWORD))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, "johndoe")
+                .param(Utils.USERNAME, JOHNDOE)
                 .header(Utils.X_PASS, "j12-45678"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, "johndoe")
+                .param(Utils.USERNAME, JOHNDOE)
                 .header(Utils.X_PASS, "j1234"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, "johndoe")
+                .param(Utils.USERNAME, JOHNDOE)
                 .header(Utils.X_PASS, "j1234567890123"))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
                 .param(Utils.USERNAME, "johnisaniceguy")
-                .header(Utils.X_PASS, "j12345678"))
+                .header(Utils.X_PASS, PASSWORD))
                 .andExpect(status().isBadRequest());
 
     }
@@ -69,13 +71,13 @@ class SignupLegacyControllerTest {
     @DisplayName("Signup with valid data")
     void signupWithValidData() throws Exception {
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, "johndoe")
-                .header(Utils.X_PASS, "j12345678"))
+                .param(Utils.USERNAME, JOHNDOE)
+                .header(Utils.X_PASS, PASSWORD))
                 .andExpect(status().is2xxSuccessful());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
-                .param(Utils.USERNAME, "johndoe")
-                .header(Utils.X_PASS, "j12345678"))
+                .param(Utils.USERNAME, JOHNDOE)
+                .header(Utils.X_PASS, PASSWORD))
                 .andExpect(status().isBadRequest());
 
         mockMvc.perform(post(SIGN_UP_MAPPING)
