@@ -1,5 +1,6 @@
 # Social network
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/2fe277ad46384ee59e653c7bb9d45a79)](https://app.codacy.com/app/anyulled/social-network?utm_source=github.com&utm_medium=referral&utm_content=anyulled/social-network&utm_campaign=Badge_Grade_Dashboard)
 [![Coverage Status](https://coveralls.io/repos/github/anyulled/social-network/badge.svg?branch=master)](https://coveralls.io/github/anyulled/social-network?branch=master)
 [![Build Status](https://travis-ci.org/anyulled/social-network.svg?branch=master)](https://travis-ci.org/anyulled/social-network)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=social-network&metric=alert_status)](https://sonarcloud.io/dashboard?id=social-network)
