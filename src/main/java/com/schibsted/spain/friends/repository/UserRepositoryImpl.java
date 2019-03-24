@@ -69,9 +69,6 @@ public class UserRepositoryImpl implements UserRepository {
      */
     @Override
     public User findUser(String username, String password) {
-        if (log.isDebugEnabled()) {
-            log.debug("Users: {}", users);
-        }
         return users.stream()
                 .filter(user -> user.getUsername().equals(username) && user.getPassword().equals(md5DigestAsHex(password.getBytes())))
                 .findFirst()
