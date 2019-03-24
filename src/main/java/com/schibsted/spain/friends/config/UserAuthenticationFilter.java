@@ -37,7 +37,6 @@ public class UserAuthenticationFilter extends AbstractAuthenticationProcessingFi
         final Authentication authentication = new UsernamePasswordAuthenticationToken(user, token);
         Authentication authenticate;
         try {
-            log.info("== Authentication attempt with {} and {} ==", authentication.getPrincipal(), authentication.getCredentials());
             authenticate = getAuthenticationManager().authenticate(authentication);
         } catch (AuthenticationException | InvalidCredentialException e) {
             log.error(e.getMessage(), e);
