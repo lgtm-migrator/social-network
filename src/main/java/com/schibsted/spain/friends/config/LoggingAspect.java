@@ -27,13 +27,11 @@ public class LoggingAspect {
     }
 
     /**
-     * Pointcut that matches all Spring beans in the application's main packages.
+     * method to log around every spring component
+     * @param joinPoint joint point
+     * @return joint point execution
+     * @throws Throwable throwable error
      */
-    @Pointcut("within(com.schibsted.spain.friends.repository..*) || within(com.schibsted.spain.friends.service..*) || within(com.schibsted.spain.friends.legacy..*)")
-    public void applicationPackagePointcut() {
-        // Method is empty as this is just a Pointcut, the implementations are in the advices.
-    }
-
     @Around("springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         if (log.isDebugEnabled()) {
@@ -55,6 +53,12 @@ public class LoggingAspect {
         }
     }
 
+    /**
+     * Logs after throwing an execption
+     *
+     * @param joinPoint joint point
+     * @param e         exception
+     */
     @AfterThrowing(pointcut = "springBeanPointcut() ", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         if (log.isDebugEnabled()) {
