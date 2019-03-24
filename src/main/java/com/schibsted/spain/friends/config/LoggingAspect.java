@@ -28,6 +28,7 @@ public class LoggingAspect {
 
     /**
      * method to log around every spring component.
+     *
      * @param joinPoint joint point
      * @return joint point execution
      * @throws Throwable throwable error
@@ -35,19 +36,24 @@ public class LoggingAspect {
     @Around("springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         if (log.isDebugEnabled()) {
-            log.debug("Entering: {}.{}() with argument[s] = {}", joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(), Arrays.toString(joinPoint.getArgs()));
+            log.debug("Entering: {}.{}() with argument[s] = {}",
+                    joinPoint.getSignature().getDeclaringTypeName(),
+                    joinPoint.getSignature().getName(),
+                    Arrays.toString(joinPoint.getArgs()));
         }
         try {
             Object result = joinPoint.proceed();
             if (log.isDebugEnabled()) {
-                log.debug("Finished: {}.{}() with result = {}", joinPoint.getSignature().getDeclaringTypeName(),
+                log.debug("Finished: {}.{}() with result = {}",
+                        joinPoint.getSignature().getDeclaringTypeName(),
                         joinPoint.getSignature().getName(), result);
             }
             return result;
         } catch (IllegalArgumentException e) {
-            log.error("Illegal argument: {} in {}.{}()", Arrays.toString(joinPoint.getArgs()),
-                    joinPoint.getSignature().getDeclaringTypeName(), joinPoint.getSignature().getName());
+            log.error("Illegal argument: {} in {}.{}()",
+                    Arrays.toString(joinPoint.getArgs()),
+                    joinPoint.getSignature().getDeclaringTypeName(),
+                    joinPoint.getSignature().getName());
 
             throw e;
         }
@@ -62,10 +68,12 @@ public class LoggingAspect {
     @AfterThrowing(pointcut = "springBeanPointcut() ", throwing = "e")
     public void logAfterThrowing(JoinPoint joinPoint, Throwable e) {
         if (log.isDebugEnabled()) {
-            log.error("Exception in {}.{}() with cause = \'{}\' and exception = \'{}\'", joinPoint.getSignature().getDeclaringTypeName(),
+            log.error("Exception in {}.{}() with cause = \'{}\' and exception = \'{}\'",
+                    joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL", e.getMessage(), e);
         } else {
-            log.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
+            log.error("Exception in {}.{}() with cause = {}",
+                    joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL");
         }
     }
