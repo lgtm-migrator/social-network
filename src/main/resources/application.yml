@@ -1,1 +1,5 @@
+spring:
+  application:
+    name: Social Network Application
+
 #logging.level.org.springframework.web: DEBUG

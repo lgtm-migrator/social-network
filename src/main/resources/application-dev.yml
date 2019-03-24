@@ -1,0 +1,10 @@
+logging:
+  level:
+    ROOT: DEBUG
+
+spring:
+  profiles:
+    active: dev
+  devtools:
+    restart:
+      enabled: true
