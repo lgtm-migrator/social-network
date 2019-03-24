@@ -27,7 +27,7 @@ public class LoggingAspect {
     }
 
     /**
-     * method to log around every spring component
+     * method to log around every spring component.
      * @param joinPoint joint point
      * @return joint point execution
      * @throws Throwable throwable error
@@ -54,7 +54,7 @@ public class LoggingAspect {
     }
 
     /**
-     * Logs after throwing an exception
+     * Logs after throwing an exception.
      *
      * @param joinPoint joint point
      * @param e         exception
