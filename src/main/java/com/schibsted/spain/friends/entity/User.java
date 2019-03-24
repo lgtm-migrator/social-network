@@ -19,9 +19,13 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
     private String username;
     private String password;
-
     @Singular
     private Set<User> friends;
+
+    @Override
+    public String toString() {
+        return String.format("user: %s password: %s", username, password);
+    }
 
     @Override
     public boolean equals(final Object obj) {
