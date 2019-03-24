@@ -19,9 +19,9 @@ public class LoggingAspect {
     /**
      * Pointcut that matches all repositories, services and Web REST endpoints.
      */
-    @Pointcut("within(@org.springframework.stereotype.Repository *)" +
-            " || within(@org.springframework.stereotype.Service *)" +
-            " || within(@org.springframework.web.bind.annotation.RestController *)")
+    @Pointcut("within(@org.springframework.stereotype.Repository *)"
+            + " || within(@org.springframework.stereotype.Service *)"
+            + " || within(@org.springframework.web.bind.annotation.RestController *)")
     public void springBeanPointcut() {
         // Method is empty as this is just a Pointcut, the implementations are in the advices.
     }
@@ -54,7 +54,7 @@ public class LoggingAspect {
     }
 
     /**
-     * Logs after throwing an execption
+     * Logs after throwing an exception
      *
      * @param joinPoint joint point
      * @param e         exception
@@ -64,7 +64,6 @@ public class LoggingAspect {
         if (log.isDebugEnabled()) {
             log.error("Exception in {}.{}() with cause = \'{}\' and exception = \'{}\'", joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL", e.getMessage(), e);
-
         } else {
             log.error("Exception in {}.{}() with cause = {}", joinPoint.getSignature().getDeclaringTypeName(),
                     joinPoint.getSignature().getName(), e.getCause() != null ? e.getCause() : "NULL");
