@@ -30,6 +30,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final RequestMatcher PUBLIC_URLS = new OrRequestMatcher(
+            new AntPathRequestMatcher("/"),
             new AntPathRequestMatcher("/signup"),
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/swagger-resources/**"),
@@ -85,7 +86,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         successHandler.setRedirectStrategy(new NoRedirectStrategy());
         return successHandler;
     }
-
 
     @Bean
     UserAuthenticationFilter restAuthenticationFilter() throws Exception {

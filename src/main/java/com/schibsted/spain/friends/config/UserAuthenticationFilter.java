@@ -39,7 +39,7 @@ public class UserAuthenticationFilter extends AbstractAuthenticationProcessingFi
         try {
             authenticate = getAuthenticationManager().authenticate(authentication);
         } catch (AuthenticationException | InvalidCredentialException e) {
-            log.error(e.getMessage(), e);
+            log.error("Authentication error: {}", e.getMessage());
             throw new BadCredentialsException(e.getMessage(), e);
         }
         return authenticate;
