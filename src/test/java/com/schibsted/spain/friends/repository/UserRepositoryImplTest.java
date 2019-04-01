@@ -14,7 +14,7 @@ class UserRepositoryImplTest {
 
     private static final String PASS = "12345678";
     private static final String JAMES = "JAMES";
-    public static final String PETER = "peter";
+    private static final String PETER = "peter";
     private UserRepositoryImpl userRepository = new UserRepositoryImpl();
 
     @Test
@@ -70,5 +70,23 @@ class UserRepositoryImplTest {
         userRepository.addUser(JAMES, PASS);
         userRepository.addFriend(james, john);
         assertThat(userRepository.updateUser(james)).isEqualTo(james.toBuilder().friend(john).build());
+    }
+
+    @Test
+    void listTest() {
+        final User anyul = User.builder().username("user1").build();
+        final User rohit = User.builder().username("user2").build();
+        userRepository.addUser("user1", "12345678");
+        userRepository.addUser("user2", "12345678");
+        userRepository.addFriend(anyul, rohit);
+        assertThat(userRepository.getUsers())
+                .as("User's name")
+                .first()
+                .isNotNull()
+                .hasFieldOrProperty("username")
+                .extracting(User::getUsername).isEqualTo("user1");
+
+        assertThat(userRepository.getUsers()).element(1)
+                .extracting(User::getUsername).isEqualTo("user2");
     }
 }
