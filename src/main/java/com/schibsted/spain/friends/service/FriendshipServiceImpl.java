@@ -105,7 +105,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                     .map(UserDTO::getUsername)
                     .sorted(Comparator.reverseOrder())//Ordering compliant
                     .collect(Collectors.toList());
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             throw new NotFoundException(ErrorDto.builder()
                     .message(String.format("user %s not found, cause: %s", user, e.getMessage()))
                     .exceptionClass(this.getClass().getSimpleName())

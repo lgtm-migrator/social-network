@@ -6,7 +6,6 @@ import com.schibsted.spain.friends.entity.User;
 import com.schibsted.spain.friends.utils.exceptions.AlreadyExistsException;
 import com.schibsted.spain.friends.utils.exceptions.ErrorDto;
 import com.schibsted.spain.friends.utils.exceptions.NotFoundException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;
