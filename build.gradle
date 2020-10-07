@@ -84,7 +84,7 @@ test {
 }
 
 dependencies {
-    compile 'org.springframework.statemachine:spring-statemachine-core:2.1.0.RELEASE'
+    compile 'org.springframework.statemachine:spring-statemachine-core:2.2.0.RELEASE'
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.boot:spring-boot-starter-security')
