@@ -9,3 +9,5 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/e083ee07b21dabc37e03/maintainability)](https://codeclimate.com/github/anyulled/social-network/maintainability)
 
 Deployed on Heroku: https://social-coding-challenge.herokuapp.com/swagger-ui.html
+
+[![](https://codescene.io/projects/4537/status.svg) Get more details at **codescene.io**.](https://codescene.io/projects/4537/jobs/latest-successful/results)
