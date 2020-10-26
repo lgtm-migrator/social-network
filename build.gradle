@@ -102,5 +102,5 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '30.0-jre'
     compileOnly 'org.projectlombok:lombok:1.18.16'
     annotationProcessor 'org.projectlombok:lombok:1.18.6'
-    testCompile("org.assertj:assertj-core:3.17.2")
+    testCompile("org.assertj:assertj-core:3.18.0")
 }
